@@ -23,14 +23,43 @@ Commands:
 
 ## Setup
 
-Install:
+### Install:
 
 ```vimscript
 Plug 'superdross/picobook'
 ```
+
+### Settings
 
 Set the directory to hold all the notes.
 
 ```vimscript
 g:notesdir = '/som/dir/path/'
 ```
+
+## Example Usage
+
+Set notes location and go to the wiki page:
+
+```vimscript
+:let g:notesdir = '/home/me/notes/'
+:GoToIndex
+```
+
+Create a basic Markdown index file:
+
+```md
+# Index
+
+## Data Structures
+
+- [Linked Lists](data_structures/linkedlist.md)
+- [Graph Data](data_structures/graphdata.md)
+
+## Python
+
+- [Async](python/async_module.py)
+- [Cython](python/cython_tutorial.pyx)
+```
+
+Place the cursor at the `Linked Lists` line and press `<Leader>wf`, the file `/home/me/notes/data_structrues/linkedlist.md` will be opened in the current window.
