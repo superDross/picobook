@@ -42,7 +42,7 @@ command! GoToIndex :execute 'edit' g:notesdir . 'index.md'
 command! -nargs=* GrepPicoNotes :call GrepNotes(<f-args>)
 command! -bang -nargs=* GrepNotesFzf
   \ call fzf#vim#grep(
-  \   'rg --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
+  \   'rg --type md --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
   \   fzf#vim#with_preview({'dir': g:notesdir}), <bang>0)
 
 nnoremap <silent> <Leader>ww :GoToIndex<CR>
