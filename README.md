@@ -13,6 +13,7 @@ Normal Mode:
 - `<Leader>wt` -- Open wiki link in new tab
 - `<Leader>wv` -- Open wiki link in new vsplit
 - `<Leader>wx` -- Open wiki link in new hsplit
+- `<Leader>wd` -- Delete wiki link
 - `<Leader>wg` -- FZF grep notes (requires [FZF](https://github.com/junegunn/fzf.vim))
 
 Commands:
