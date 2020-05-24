@@ -1,6 +1,6 @@
 # <sub>pico</sub>Book
 
-A very tiny & simple notebook/wiki for vim.
+A very tiny & simple notebook for vim.
 
 Heavily inspired by [vimwiki](https://github.com/vimwiki/vimwiki).
 

@@ -13,7 +13,7 @@ function CreateParentDir(filepath)
   endif
 endfunction
 
-function GoTo(opencommand)
+function GetNoteFileName()
   if expand('%:t') !=# 'index.md'
     " echoerr 'Command invalid outside index page'
     return 1
@@ -21,7 +21,19 @@ function GoTo(opencommand)
   if CharUnderCursor() !=# '('
     execute 'normal! f('
   endif
-  let note_file = g:notesdir . expand('<cfile>')
+  return g:notesdir . expand('<cfile>')
+endfunction
+
+function DeleteNoteFile()
+  let note_file = GetNoteFileName()
+  let answer = input('Delete file? (y/n):  ')
+  if answer ==# 'y'
+    call system('rm ' . note_file)
+  endif
+endfunction
+
+function GoToNoteFile(opencommand)
+  let note_file = GetNoteFileName()
   call CreateParentDir(note_file)
   execute a:opencommand . note_file
 endfunction
@@ -34,8 +46,9 @@ command! -bang -nargs=* GrepNotesFzf
   \   fzf#vim#with_preview({'dir': g:notesdir}), <bang>0)
 
 nnoremap <silent> <Leader>ww :GoToIndex<CR>
-nnoremap <silent> <Leader>wf :call GoTo('edit')<CR>
-nnoremap <silent> <Leader>wt :call GoTo('tabe')<CR>
-nnoremap <silent> <Leader>wv :call GoTo('vs')<CR>
-nnoremap <silent> <Leader>wx :call GoTo('sp')<CR>
+nnoremap <silent> <Leader>wf :call GoToNoteFile('edit')<CR>
+nnoremap <silent> <Leader>wt :call GoToNoteFile('tabe')<CR>
+nnoremap <silent> <Leader>wv :call GoToNoteFile('vs')<CR>
+nnoremap <silent> <Leader>wx :call GoToNoteFile('sp')<CR>
+nnoremap <silent> <Leader>wd :call DeleteNoteFile()<CR>
 nnoremap <silent> <Leader>wg :GrepNotesFzf<CR>
