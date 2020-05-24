@@ -1,4 +1,4 @@
-# <sub>pico<\sub>Book
+# <sub>pico</sub>Book
 
 A very tiny & simple notebook/wiki for vim.
 
