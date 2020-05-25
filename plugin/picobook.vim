@@ -2,9 +2,11 @@ function! GrepNotes(query)
   execute 'vimgrep! /\c' . a:query . '/j ' . g:notesdir . '**/*.md'
 endfunction
 
+
 function CharUnderCursor()
   return strcharpart(getline('.')[col('.') - 1:], 0, 1)
 endfunction
+
 
 function CreateParentDir(filepath)
   let dirpath = fnamemodify(a:filepath, ':h')
@@ -13,18 +15,28 @@ function CreateParentDir(filepath)
   endif
 endfunction
 
+
+function CheckIfInIndex()
+  try
+    if expand('%:t') !=# 'index.md'
+      throw 'Command invalid outside index page'
+    endif
+  catch /.invalid outside index/
+    echoerr 'Command only valid within picobook index file'
+  endtry
+endfunction
+
+
 function GetNoteFileName()
-  if expand('%:t') !=# 'index.md'
-    " echoerr 'Command invalid outside index page'
-    return 1
-  endif
   if CharUnderCursor() !=# '('
     execute 'normal! f('
   endif
   return g:notesdir . expand('<cfile>')
 endfunction
 
+
 function DeleteNoteFile()
+  call CheckIfInIndex()
   let note_file = GetNoteFileName()
   let answer = input('Delete file? (y/n):  ')
   if answer ==# 'y'
@@ -32,11 +44,14 @@ function DeleteNoteFile()
   endif
 endfunction
 
+
 function GoToNoteFile(opencommand)
+  call CheckIfInIndex()
   let note_file = GetNoteFileName()
   call CreateParentDir(note_file)
   execute a:opencommand . note_file
 endfunction
+
 
 command! GoToIndex :execute 'edit' g:notesdir . 'index.md'
 command! -nargs=* GrepPicoNotes :call GrepNotes(<f-args>)
