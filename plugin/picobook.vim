@@ -28,10 +28,19 @@ endfunction
 
 
 function GetNoteFileName()
-  if CharUnderCursor() !=# '('
-    execute 'normal! f('
-  endif
-  return g:notesdir . expand('<cfile>')
+  let line = getline('.')
+  try
+    " if startswith '-' and has brackets
+    if line =~# '^-' && line =~# '(' && line =~# ')'
+      let stringInBrackets = matchstr(line, '(.*)')
+      let partialPath = substitute(stringInBrackets, '(\|)', '', 'g')
+      return g:notesdir . partialPath
+    else
+      throw 'not valid line'
+    endif
+  catch /not valid line/
+    echoerr 'This line does not contain a valid link'
+  endtry
 endfunction
 
 
