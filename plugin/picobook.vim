@@ -27,13 +27,21 @@ function CheckIfInIndex()
 endfunction
 
 
+function CleanLineText(text)
+  " retrieve parial file path from index line
+  let stringInBrackets = matchstr(a:text, '(.*)')
+  let partialPath = substitute(stringInBrackets, '(\|)', '', 'g')
+  let partialPath = substitute(partialPath, ':.*', '', '')
+  return partialPath
+endfunction
+
+
 function GetNoteFileName()
   let line = getline('.')
   try
     " if startswith '-' and has brackets
     if line =~# '^-' && line =~# '(' && line =~# ')'
-      let stringInBrackets = matchstr(line, '(.*)')
-      let partialPath = substitute(stringInBrackets, '(\|)', '', 'g')
+      let partialPath = CleanLineText(line)
       return g:notesdir . partialPath
     else
       throw 'not valid line'
