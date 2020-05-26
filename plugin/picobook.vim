@@ -27,21 +27,12 @@ function CheckIfInIndex()
 endfunction
 
 
-function CleanLineText(text)
-  " retrieve parial file path from index line
-  let stringInBrackets = matchstr(a:text, '(.*)')
-  let partialPath = substitute(stringInBrackets, '(\|)', '', 'g')
-  let partialPath = substitute(partialPath, ':.*', '', '')
-  return partialPath
-endfunction
-
-
 function GetNoteFileName()
   let line = getline('.')
   try
     " if startswith '-' and has brackets
     if line =~# '^-' && line =~# '(' && line =~# ')'
-      let partialPath = CleanLineText(line)
+      let partialPath = matchstr(line, '(\zs.\{-}\ze)')
       return g:notesdir . partialPath
     else
       throw 'not valid line'
@@ -57,7 +48,7 @@ function DeleteNoteFile()
   let note_file = GetNoteFileName()
   let answer = input('Delete file? (y/n):  ')
   if answer ==# 'y'
-    call system('rm ' . note_file)
+    call delete(note_file)
   endif
 endfunction
 
