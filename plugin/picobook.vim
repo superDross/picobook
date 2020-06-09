@@ -27,19 +27,25 @@ function CheckIfInIndex()
 endfunction
 
 
-function GetNoteFileName()
+function ExtractPath()
+  " extracts path link under cursor
   let line = getline('.')
   try
     " if startswith '-' and has brackets
     if line =~# '^-' && line =~# '(' && line =~# ')'
-      let partialPath = matchstr(line, '(\zs.\{-}\ze)')
-      return g:notesdir . partialPath
+      return matchstr(line, '(\zs.\{-}\ze)')
     else
       throw 'not valid line'
     endif
   catch /not valid line/
     echoerr 'This line does not contain a valid link'
   endtry
+endfunction
+
+
+function GetNoteFileName()
+  let partialPath = ExtractPath()
+  return g:notesdir . partialPath
 endfunction
 
 
@@ -61,6 +67,13 @@ function GoToNoteFile(opencommand)
 endfunction
 
 
+function GoToNoteWebPage()
+  call CheckIfInIndex()
+  let partialPath = ExtractPath()
+  call system('firefox ' . g:noteurl . partialPath)
+endfunction
+
+
 command! GoToIndex :execute 'edit' g:notesdir . 'index.md'
 command! -nargs=* GrepPicoNotes :call GrepNotes(<f-args>)
 command! -bang -nargs=* GrepNotesFzf
@@ -69,6 +82,7 @@ command! -bang -nargs=* GrepNotesFzf
   \   fzf#vim#with_preview({'dir': g:notesdir}), <bang>0)
 
 nnoremap <silent> <Leader>ww :GoToIndex<CR>
+nnoremap <silent> <Leader>wi :call GoToNoteWebPage()<CR>
 nnoremap <silent> <Leader>wf :call GoToNoteFile('edit')<CR>
 nnoremap <silent> <Leader>wt :call GoToNoteFile('tabe')<CR>
 nnoremap <silent> <Leader>wv :call GoToNoteFile('vs')<CR>
