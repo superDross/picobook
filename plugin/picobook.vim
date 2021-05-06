@@ -70,9 +70,11 @@ endfunction
 function GoToNoteWebPage()
   call CheckIfInIndex()
   let partialPath = ExtractPath()
-  call system('firefox ' . g:noteurl . partialPath)
+  call system(g:browser . ' ' . g:noteurl . partialPath)
 endfunction
 
+
+let g:browser = get(g:, 'browser', 'firefox')
 
 command! GoToIndex :execute 'edit' g:notesdir . 'index.md'
 command! -nargs=* GrepPicoNotes :call GrepNotes(<f-args>)
