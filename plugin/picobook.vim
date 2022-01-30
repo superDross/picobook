@@ -63,6 +63,7 @@ function GoToNoteFile(opencommand)
   call CheckIfInIndex()
   let note_file = GetNoteFileName()
   call CreateParentDir(note_file)
+  silent! write
   execute a:opencommand . note_file
 endfunction
 
