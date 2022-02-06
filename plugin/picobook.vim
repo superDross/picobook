@@ -55,6 +55,7 @@ function DeleteNoteFile()
   let answer = input('Delete file? (y/n):  ')
   if answer ==# 'y'
     call delete(note_file)
+    execute 'delete'
   endif
 endfunction
 
