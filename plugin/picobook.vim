@@ -18,11 +18,11 @@ endfunction
 
 function CheckIfInIndex()
   try
-    if expand('%:t') !=# 'index.md'
+    if expand('%:h')[-9:-1] !=# '/_indexes'
       throw 'Command invalid outside index page'
     endif
   catch /.invalid outside index/
-    echoerr 'Command only valid within picobook index file'
+    echoerr 'Command only valid within picobook index files'
   endtry
 endfunction
 
@@ -56,6 +56,7 @@ function DeleteNoteFile()
   if answer ==# 'y'
     call delete(note_file)
     execute 'delete'
+    silent! write
   endif
 endfunction
 
@@ -75,17 +76,23 @@ function GoToNoteWebPage()
   call system(g:browser . ' ' . g:noteurl . partialPath)
 endfunction
 
+function GoToIndex()
+  let indexpath = g:notesdir . '/_indexes/' . 'index.md'
+  call CreateParentDir(indexpath)
+  execute 'edit ' . indexpath
+endfunction
+
 
 let g:browser = get(g:, 'browser', 'firefox')
 
-command! GoToIndex :execute 'edit' g:notesdir . 'index.md'
+command! GoToIndex :call GoToIndex()
 command! -nargs=* GrepPicoNotes :call GrepNotes(<f-args>)
 command! -bang -nargs=* GrepNotesFzf
   \ call fzf#vim#grep(
   \   'rg --type md --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
   \   fzf#vim#with_preview({'dir': g:notesdir}), <bang>0)
 
-nnoremap <silent> <Leader>ww :GoToIndex<CR>
+nnoremap <silent> <Leader>ww :call GoToIndex()<CR>
 nnoremap <silent> <Leader>wi :call GoToNoteWebPage()<CR>
 nnoremap <silent> <Leader>wf :call GoToNoteFile('edit')<CR>
 nnoremap <silent> <Leader>wt :call GoToNoteFile('tabe')<CR>
