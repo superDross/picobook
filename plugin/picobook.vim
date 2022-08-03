@@ -61,6 +61,48 @@ function DeleteNoteFile()
 endfunction
 
 
+function MoveNoteFile()
+
+  " only allow function if executed within an index file
+  call CheckIfInIndex()
+
+  " get path for current file under cursor
+  let filepath = GetNoteFileName()
+  let relativepath = ExtractPath()
+  let filename = fnamemodify( filepath, ':p:t')
+
+  " append forward slash if not present on new directory
+  let newdir = input('Enter new directory: ')
+  if newdir[-1:] !=# '/'
+    let newdir = newdir . '/'
+  endif
+
+  " get the path for the new files
+  let new_relativepath = newdir . filename
+  let new_filename = g:notesdir . new_relativepath
+
+  let confirmation = input(
+  \  'Move file from ' . relativepath .
+  \  ' to ' . new_relativepath . '? (y/n): '
+  \)
+
+  if confirmation ==# 'y'
+    " s/currentname/newname/
+    let new_line = substitute(
+    \  getline('.'),
+    \  relativepath,
+    \  new_relativepath,
+    \  ''
+    \)
+    call system('mkdir -p ' . fnamemodify(new_filename, ':p:h'))
+    call system('mv ' . filepath . ' ' . new_filename)
+    " setline with new substitute line
+    call setline(line('.'), new_line)
+  endif
+
+endfunction
+
+
 function GoToNoteFile(opencommand)
   call CheckIfInIndex()
   let note_file = GetNoteFileName()
@@ -75,6 +117,7 @@ function GoToNoteWebPage()
   let partialPath = ExtractPath()
   call system(g:browser . ' ' . g:noteurl . partialPath)
 endfunction
+
 
 function GoToIndex()
   let indexpath = g:notesdir . '/_indexes/' . 'index.md'
@@ -99,4 +142,5 @@ nnoremap <silent> <Leader>wt :call GoToNoteFile('tabe')<CR>
 nnoremap <silent> <Leader>wv :call GoToNoteFile('vs')<CR>
 nnoremap <silent> <Leader>wx :call GoToNoteFile('sp')<CR>
 nnoremap <silent> <Leader>wd :call DeleteNoteFile()<CR>
+nnoremap <silent> <Leader>wm :call MoveNoteFile()<CR>
 nnoremap <silent> <Leader>wg :GrepNotesFzf<CR>
