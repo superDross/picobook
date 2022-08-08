@@ -1,4 +1,4 @@
-# <sub>pico</sub>Book
+# <sub>pico</sub>B<sub>ook</sub>
 
 A very tiny & simple notebook for vim.
 
