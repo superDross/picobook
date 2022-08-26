@@ -22,8 +22,8 @@ Commands:
 
 - `:GoToIndex` -- Open index page
 - `:GoToNoteWebPage` -- Open wiki link in GitHub
-- `:GrepNotes *` -- Vimgrep given args
-- `:GrepNotesFzf` -- FZF grep notes
+- `:GrepPicoNotes *` -- Vimgrep given args
+- `:GrepPicoNotesFzf` -- FZF grep notes
 
 ## Setup
 

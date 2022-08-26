@@ -1,4 +1,4 @@
-function! GrepNotes(query)
+function! GrepPicoNotes(query)
   execute 'vimgrep! /\c' . a:query . '/j ' . g:notesdir . '**/*.md'
 endfunction
 
@@ -129,8 +129,8 @@ endfunction
 let g:browser = get(g:, 'browser', 'firefox')
 
 command! GoToIndex :call GoToIndex()
-command! -nargs=* GrepPicoNotes :call GrepNotes(<f-args>)
-command! -bang -nargs=* GrepNotesFzf
+command! -nargs=* GrepPicoNotes :call GrepPicoNotes(<f-args>)
+command! -bang -nargs=* GrepPicoNotesFzf
   \ call fzf#vim#grep(
   \   'rg --type md --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
   \   fzf#vim#with_preview({'dir': g:notesdir}), <bang>0)
@@ -143,4 +143,4 @@ nnoremap <silent> <Leader>wv :call GoToNoteFile('vs')<CR>
 nnoremap <silent> <Leader>wx :call GoToNoteFile('sp')<CR>
 nnoremap <silent> <Leader>wd :call DeleteNoteFile()<CR>
 nnoremap <silent> <Leader>wm :call MoveNoteFile()<CR>
-nnoremap <silent> <Leader>wg :GrepNotesFzf<CR>
+nnoremap <silent> <Leader>wg :GrepPicoNotesFzf<CR>
