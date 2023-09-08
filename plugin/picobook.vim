@@ -1,13 +1,3 @@
-function! GrepPicoNotes(query)
-  execute 'vimgrep! /\c' . a:query . '/j ' . g:notesdir . '**/*.md'
-endfunction
-
-
-function CharUnderCursor()
-  return strcharpart(getline('.')[col('.') - 1:], 0, 1)
-endfunction
-
-
 function CreateParentDir(filepath)
   let dirpath = fnamemodify(a:filepath, ':h')
   if !filereadable(dirpath)
@@ -129,12 +119,7 @@ endfunction
 let g:browser = get(g:, 'browser', 'firefox')
 
 command! GoToIndex :call GoToIndex()
-command! -nargs=* GrepPicoNotes :call GrepPicoNotes(<f-args>)
-command! -bang -nargs=* GrepPicoNotesFzf
-  \ call fzf#vim#grep(
-  \   'rg --type md --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>), 1,
-  \   fzf#vim#with_preview({'dir': g:notesdir}), <bang>0)
-
+command! -bang -nargs=* GrepPicoNotes :call picobook#fzf#FzfNotes(<q-args>)
 nnoremap <silent> <Leader>ww :call GoToIndex()<CR>
 nnoremap <silent> <Leader>wi :call GoToNoteWebPage()<CR>
 nnoremap <silent> <Leader>wf :call GoToNoteFile('edit')<CR>
@@ -143,4 +128,4 @@ nnoremap <silent> <Leader>wv :call GoToNoteFile('vs')<CR>
 nnoremap <silent> <Leader>wx :call GoToNoteFile('sp')<CR>
 nnoremap <silent> <Leader>wd :call DeleteNoteFile()<CR>
 nnoremap <silent> <Leader>wm :call MoveNoteFile()<CR>
-nnoremap <silent> <Leader>wg :GrepPicoNotesFzf<CR>
+nnoremap <silent> <Leader>wg :GrepPicoNotes<CR>
