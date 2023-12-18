@@ -8,7 +8,7 @@ function! s:FzfLuaNotes(args) abort
   if picobook#utils#IsInstalled('fzf-lua')
     lua require('fzf-lua').grep({
       \ rg_glob=true,
-      \ cwd = vim.g.notes_dir,
+      \ cwd = vim.g.notesdir,
       \ search=vim.fn.eval('a:args') .. ' -- *.md',
       \ no_esc=true
     \ })
