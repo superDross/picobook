@@ -33,6 +33,10 @@ endfunction
 
 function! picobook#fzf#FzfNotes(args) abort
   " interactively search notes contents using junegunn/fzf.vim or fzf-lua
+  if g:notesdir ==# '' || !isdirectory(expand(g:notesdir))
+    echoerr 'g:notesdir is not set or is not a directory'
+    return
+  endif
   if has('nvim') && picobook#utils#IsInstalled('fzf-lua')
     return s:FzfLuaNotes(a:args)
   endif
