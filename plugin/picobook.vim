@@ -36,12 +36,9 @@ endfunction
 function GetNoteFileName()
   let partialPath = ExtractPath()
 
-  if partialPath =~# '_indexes'
-    return expand(g:notesdir . partialPath)
-  endif
-
   " make sure partialPath starts with '../'
-  if partialPath[:2] !=# '../'
+  " ignore that does not contain / as they are index files
+  if partialPath[:2] !=# '../' && partialPath =~# '/'
     normal! 0f(a../
     let partialPath = '../' . partialPath
   endif
@@ -117,6 +114,14 @@ endfunction
 function GoToNoteWebPage()
   call CheckIfInIndex()
   let partialPath = ExtractPath()
+  " is index file
+  if partialPath !~# '/'
+    let partialPath = '_indexes/' . partialPath
+  " is note file
+  elseif partialPath[:2] ==# '../'
+    let partialPath = partialPath[2:]
+  endif
+  echo g:browser . ' ' . g:noteurl . partialPath
   call system(g:browser . ' ' . g:noteurl . partialPath)
 endfunction
 

@@ -57,6 +57,9 @@ Create a basic Markdown index file:
 ```md
 # Index
 
+<!-- creates a sub-index file specifically for languages -->
+- [Languages](languages.md)
+
 ## Data Structures
 
 - [Linked Lists](data_structures/linkedlist.md)
