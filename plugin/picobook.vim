@@ -8,7 +8,7 @@ endfunction
 
 function CheckIfInIndex()
   try
-    if expand('%:h')[-9:-1] !=# '/_indexes'
+    if stridx(expand('%h'), '_indexes/') == -1
       throw 'Command invalid outside index page'
     endif
   catch /.invalid outside index/
@@ -35,7 +35,19 @@ endfunction
 
 function GetNoteFileName()
   let partialPath = ExtractPath()
-  return g:notesdir . partialPath
+
+  if partialPath =~# '_indexes'
+    return expand(g:notesdir . partialPath)
+  endif
+
+  " make sure partialPath starts with '../'
+  if partialPath[:2] !=# '../'
+    normal! 0f(a../
+    let partialPath = '../' . partialPath
+  endif
+
+  " e.g. /home/demon/notes/_indexes/languages.md
+  return expand(g:notesdir . '/_indexes/' . partialPath)
 endfunction
 
 
