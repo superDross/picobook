@@ -116,7 +116,17 @@ function GoToIndex()
 endfunction
 
 
-let g:browser = get(g:, 'browser', 'firefox')
+function GetBrowserSubCommand()
+  let browser = get(g:, 'browser', 'firefox')
+  if has('mac')
+    let title_case_browser = toupper(browser[0]) . browser[1:]
+    return 'open -a /Applications/' . title_case_browser . '.app'
+  endif
+  return browser
+endfunction
+
+
+let g:browser = GetBrowserSubCommand()
 
 command! GoToIndex :call GoToIndex()
 command! -bang -nargs=* GrepPicoNotes :call picobook#fzf#FzfNotes(<q-args>)
