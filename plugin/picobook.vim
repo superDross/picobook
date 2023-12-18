@@ -36,12 +36,9 @@ endfunction
 function GetNoteFileName()
   let partialPath = ExtractPath()
 
-  if partialPath =~# '_indexes'
-    return expand(g:notesdir . partialPath)
-  endif
-
   " make sure partialPath starts with '../'
-  if partialPath[:2] !=# '../'
+  " ignore that does not contain / as they are index files
+  if partialPath[:2] !=# '../' && partialPath =~# '/'
     normal! 0f(a../
     let partialPath = '../' . partialPath
   endif
