@@ -8,7 +8,7 @@ endfunction
 
 function CheckIfInIndex()
   try
-    if expand('%:h')[-9:-1] !=# '/_indexes'
+    if stridx(expand('%h'), '_indexes/') == -1
       throw 'Command invalid outside index page'
     endif
   catch /.invalid outside index/
@@ -35,7 +35,19 @@ endfunction
 
 function GetNoteFileName()
   let partialPath = ExtractPath()
-  return g:notesdir . partialPath
+
+  if partialPath =~# '_indexes'
+    return expand(g:notesdir . partialPath)
+  endif
+
+  " make sure partialPath starts with '../'
+  if partialPath[:2] !=# '../'
+    normal! 0f(a../
+    let partialPath = '../' . partialPath
+  endif
+
+  " e.g. /home/demon/notes/_indexes/languages.md
+  return expand(g:notesdir . '/_indexes/' . partialPath)
 endfunction
 
 
@@ -116,7 +128,17 @@ function GoToIndex()
 endfunction
 
 
-let g:browser = get(g:, 'browser', 'firefox')
+function GetBrowserSubCommand()
+  let browser = get(g:, 'browser', 'firefox')
+  if has('mac')
+    let title_case_browser = toupper(browser[0]) . browser[1:]
+    return 'open -a /Applications/' . title_case_browser . '.app'
+  endif
+  return browser
+endfunction
+
+
+let g:browser = GetBrowserSubCommand()
 
 command! GoToIndex :call GoToIndex()
 command! -bang -nargs=* GrepPicoNotes :call picobook#fzf#FzfNotes(<q-args>)
