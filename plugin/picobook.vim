@@ -114,6 +114,14 @@ endfunction
 function GoToNoteWebPage()
   call CheckIfInIndex()
   let partialPath = ExtractPath()
+  " is index file
+  if partialPath !~# '/'
+    let partialPath = '_indexes/' . partialPath
+  " is note file
+  elseif partialPath[:2] ==# '../'
+    let partialPath = partialPath[2:]
+  endif
+  echo g:browser . ' ' . g:noteurl . partialPath
   call system(g:browser . ' ' . g:noteurl . partialPath)
 endfunction
 
