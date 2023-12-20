@@ -101,13 +101,28 @@ function MoveNoteFile()
 
 endfunction
 
+function AddBackButton(back_filepath)
+  " back_marker is used to check if back button already exists
+  let back_marker = '<!-- back-button-picobook -->'
+  let back_button = '[Back](' . a:back_filepath . ')'
+  " if not present, add back button to top of file & save
+  if search('\<back-button-picobook\>', 'nw') == 0
+    normal! ggO
+    call append(line('.') - 1, back_marker)
+    call append(line('.') - 1, back_button)
+    silent! write
+  endif
+endfunction
+
 
 function GoToNoteFile(opencommand)
   call CheckIfInIndex()
   let note_file = GetNoteFileName()
   call CreateParentDir(note_file)
   silent! write
+  let current_index_path = expand('%:p')
   execute a:opencommand . note_file
+  call AddBackButton(current_index_path)
 endfunction
 
 
