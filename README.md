@@ -9,11 +9,13 @@ Heavily inspired by [vimwiki](https://github.com/vimwiki/vimwiki).
 Normal Mode:
 
 - `<Leader>ww` -- Open index page
+- `<Leader>wo` -- Open index page in your browser (browser specified with `g:browser`)
 - `<Leader>wf` -- Open wiki link
 - `<Leader>wt` -- Open wiki link in new tab
 - `<Leader>wv` -- Open wiki link in new vsplit
 - `<Leader>wx` -- Open wiki link in new hsplit
 - `<Leader>wi` -- Open wiki link in GitHub
+- `<Leader>wb` -- Open wiki link in browser
 - `<Leader>wd` -- Delete wiki link and associated file
 - `<Leader>wm` -- Move wiki link and associated file
 - `<Leader>wg` -- FZF grep notes (requires [FZF](https://github.com/junegunn/fzf.vim))
