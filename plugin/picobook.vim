@@ -98,15 +98,15 @@ function MoveNoteFile()
     " setline with new substitute line
     call setline(line('.'), new_line)
   endif
-
 endfunction
+
 
 function AddBackButton(back_filepath)
   " back_marker is used to check if back button already exists
   let back_marker = '<!-- back-button-picobook -->'
   let back_button = '[Back](' . a:back_filepath . ')'
   " if not present, add back button to top of file & save
-  if search('\<back-button-picobook\>', 'nw') == 0
+  if search('\<back-button-picobook\>', 'nw') == 0 && &filetype ==# 'markdown'
     normal! ggO
     call append(line('.') - 1, back_marker)
     call append(line('.') - 1, back_button)
