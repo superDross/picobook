@@ -20,3 +20,38 @@ function! picobook#utils#CharUnderCursor() abort
   " return the character under the cursor
   return strcharpart(getline('.')[col('.') - 1:], 0, 1)
 endfunction
+
+
+function! picobook#utils#GetRelativePath(to, from) abort
+  " get the relative path from one file to another
+  let to = fnamemodify(a:to, ':p')
+  let from = fnamemodify(a:from, ':p')
+
+  " identify the common path between the two args
+  let common_path = ''
+  let i = 0
+  for name in split(to, '/')
+    if name == split(from, '/')[i]
+      let common_path = common_path . '/' . name
+      let i += 1
+    else
+       let common_path = common_path . '/'
+      break
+    endif
+  endfor
+
+  " get the number of directories to go up
+  let _from = substitute(from, common_path, '', '')
+  let _from = substitute(_from, fnamemodify(from, ':t'), '', '')
+  let relative_len = len(split(_from, '/'))
+
+  " build the relative path
+  let relative_up = ''
+  for i in range(0, relative_len - 1)
+    let relative_up = relative_up . '../'
+  endfor
+  let relative_up = (empty(relative_up) ? './' : relative_up)
+  let relative_path = relative_up . substitute(to, common_path, '', '')
+
+  return relative_path
+endfunction

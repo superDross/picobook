@@ -122,7 +122,8 @@ function GoToNoteFile(opencommand)
   silent! write
   let current_index_path = expand('%:p')
   execute a:opencommand . note_file
-  call AddBackButton(current_index_path)
+  let back_file_path = picobook#utils#GetRelativePath(current_index_path, expand('%:p'))
+  call AddBackButton(back_file_path)
 endfunction
 
 
