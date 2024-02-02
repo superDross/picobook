@@ -28,7 +28,7 @@ function ExtractPath()
       throw 'not valid line'
     endif
   catch /not valid line/
-    echoerr 'This line does not contain a valid link'
+    echoerr 'This line does not contain a valid link; must start with "-" and contain brackets "()"'
   endtry
 endfunction
 
