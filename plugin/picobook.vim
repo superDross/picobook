@@ -71,7 +71,7 @@ function MoveNoteFile()
   let filename = fnamemodify( filepath, ':p:t')
 
   " append forward slash if not present on new directory
-  let newdir = input('Enter new directory: ')
+  let newdir = input('Enter new directory (relative to the top level dir): ')
   if newdir[-1:] !=# '/'
     let newdir = newdir . '/'
   endif
@@ -80,9 +80,11 @@ function MoveNoteFile()
   let new_relativepath = newdir . filename
   let new_filename = g:notesdir . new_relativepath
 
+  " e.g. ~/bin/piconotes/ -> piconotes/
+  let rootdir =  fnamemodify(substitute(expand(g:notesdir), '/$', '', ''), ':t') . '/'
   let confirmation = input(
   \  'Move file from ' . relativepath .
-  \  ' to ' . new_relativepath . '? (y/n): '
+  \  ' to ' . rootdir . new_relativepath . '? (y/n): '
   \)
 
   if confirmation ==# 'y'
