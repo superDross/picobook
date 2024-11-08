@@ -176,6 +176,34 @@ function GetBrowserSubCommand()
 endfunction
 
 
+function CreateNewPage()
+  " create a new index entry and go to the new page
+  call CheckIfInIndex()
+  let newdir = input('Enter title of new page: ')
+
+  " check if newdir is empty, then error if it is
+  if newdir ==# ''
+    echoerr 'No title entered'
+    return
+  endif
+
+  " get the base file name and remove the extension
+  let dirname = fnamemodify(expand('%:p'), ':t:r')
+  let newfile = tolower(join(split(newdir, ' '), '_')) . '.md'
+  let fullpath = (dirname ==# 'index') ? newfile : '../' . dirname . '/' . newfile
+
+  " check if file already exists, then error if it does
+  if filereadable(fullpath)
+    echoerr 'File already exists'
+    return
+  endif
+
+  " write the new filename to the page and go to it
+  call append(line('.'), '- [' . newdir . '](' . fullpath . ')')
+  normal! j
+  call GoToNoteFile('edit')
+endfunction
+
 let g:browser = GetBrowserSubCommand()
 
 command! GoToIndex :call GoToIndex()
@@ -191,3 +219,4 @@ nnoremap <silent> <Leader>wx :call GoToNoteFile('sp')<CR>
 nnoremap <silent> <Leader>wd :call DeleteNoteFile()<CR>
 nnoremap <silent> <Leader>wm :call MoveNoteFile()<CR>
 nnoremap <silent> <Leader>wg :GrepPicoNotes<CR>
+nnoremap <silent> <Leader>wp :call CreateNewPage()<CR>
