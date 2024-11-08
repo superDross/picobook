@@ -52,6 +52,7 @@ function! picobook#utils#GetRelativePath(to, from) abort
   endfor
   let relative_up = (empty(relative_up) ? './' : relative_up)
   let relative_path = relative_up . substitute(to, common_path, '', '')
-
-  return relative_path
+  " stops multiple forward slashes e.g. ..//_index/index.md
+  let normalised_relative_path = substitute(relative_path, '//', '/', 'g')
+  return normalised_relative_path
 endfunction
