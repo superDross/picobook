@@ -107,11 +107,13 @@ function AddBackButton(back_filepath)
   " back_marker is used to check if back button already exists
   let back_marker = '<!-- back-button-picobook -->'
   let back_button = '[Back](' . a:back_filepath . ')'
+  let toc = '[TOC]'
   " if not present, add back button to top of file & save
   if search('\<back-button-picobook\>', 'nw') == 0 && &filetype ==# 'markdown'
     normal! ggO
     call append(line('.') - 1, back_marker)
     call append(line('.') - 1, back_button)
+    call append(line('.'), toc)
     silent! write
   endif
 endfunction
