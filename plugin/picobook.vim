@@ -153,8 +153,8 @@ function OpenPageInBrowser()
 endfunction
 
 
-function OpenIndexInBrowser()
-  let indexpath = g:notesdir . '/_indexes/' . 'index.md'
+function OpenFileInBrowser()
+  let indexpath = expand('%:p')
   call system(g:browser . ' ' . indexpath)
 endfunction
 
@@ -209,7 +209,7 @@ let g:browser = GetBrowserSubCommand()
 command! GoToIndex :call GoToIndex()
 command! -bang -nargs=* GrepPicoNotes :call picobook#fzf#FzfNotes(<q-args>)
 nnoremap <silent> <Leader>ww :call GoToIndex()<CR>
-nnoremap <silent> <Leader>wo :call OpenIndexInBrowser()<CR>
+nnoremap <silent> <Leader>wo :call OpenFileInBrowser()<CR>
 nnoremap <silent> <Leader>wi :call OpenPageInGitHub()<CR>
 nnoremap <silent> <Leader>wb :call OpenPageInBrowser()<CR>
 nnoremap <silent> <Leader>wf :call GoToNoteFile('edit')<CR>
