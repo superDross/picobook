@@ -71,7 +71,7 @@ function MoveNoteFile()
   let filename = fnamemodify( filepath, ':p:t')
 
   " append forward slash if not present on new directory
-  let newdir = input('Enter new directory: ')
+  let newdir = input('Enter new directory (relative to the top level dir): ')
   if newdir[-1:] !=# '/'
     let newdir = newdir . '/'
   endif
@@ -80,9 +80,11 @@ function MoveNoteFile()
   let new_relativepath = newdir . filename
   let new_filename = g:notesdir . new_relativepath
 
+  " e.g. ~/bin/piconotes/ -> piconotes/
+  let rootdir =  fnamemodify(substitute(expand(g:notesdir), '/$', '', ''), ':t') . '/'
   let confirmation = input(
   \  'Move file from ' . relativepath .
-  \  ' to ' . new_relativepath . '? (y/n): '
+  \  ' to ' . rootdir . new_relativepath . '? (y/n): '
   \)
 
   if confirmation ==# 'y'
@@ -105,11 +107,13 @@ function AddBackButton(back_filepath)
   " back_marker is used to check if back button already exists
   let back_marker = '<!-- back-button-picobook -->'
   let back_button = '[Back](' . a:back_filepath . ')'
+  let toc = '[TOC]'
   " if not present, add back button to top of file & save
   if search('\<back-button-picobook\>', 'nw') == 0 && &filetype ==# 'markdown'
     normal! ggO
     call append(line('.') - 1, back_marker)
     call append(line('.') - 1, back_button)
+    call append(line('.'), toc)
     silent! write
   endif
 endfunction
