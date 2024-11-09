@@ -103,23 +103,33 @@ function MoveNoteFile()
 endfunction
 
 
-function AddBackButton(back_filepath)
+function AddBackButton(back_filepath, title = v:null)
+  " add a back button to the top of the file, marker and TOC with optional
+  " title
+
   " back_marker is used to check if back button already exists
+  if search('\<back-button-picobook\>', 'nw') == 1 && &filetype ==# 'markdown'
+    return
+  endif
+  " create all the necessary text to be inserted
   let back_marker = '<!-- back-button-picobook -->'
   let back_button = '[Back](' . a:back_filepath . ')'
   let toc = '[TOC]'
-  " if not present, add back button to top of file & save
-  if search('\<back-button-picobook\>', 'nw') == 0 && &filetype ==# 'markdown'
-    normal! ggO
-    call append(line('.') - 1, back_marker)
-    call append(line('.') - 1, back_button)
-    call append(line('.'), toc)
-    silent! write
+" if not present, add back button to top of file & save
+  normal! ggO
+  call append(line('.') - 1, back_marker)
+  call append(line('.') - 1, back_button)
+  call append(line('.'), toc)
+  if a:title != v:null
+    call append(line('.') + 2, '# ' . a:title)
   endif
+  silent! write
 endfunction
 
 
-function GoToNoteFile(opencommand)
+function GoToNoteFile(opencommand, title = v:null)
+  " open and/or create the note file under the cursor and create a back button, if not
+  " already present
   call CheckIfInIndex()
   let note_file = GetNoteFileName()
   call CreateParentDir(note_file)
@@ -127,7 +137,7 @@ function GoToNoteFile(opencommand)
   let current_index_path = expand('%:p')
   execute a:opencommand . note_file
   let back_file_path = picobook#utils#GetRelativePath(current_index_path, expand('%:p'))
-  call AddBackButton(back_file_path)
+  call AddBackButton(back_file_path, a:title)
 endfunction
 
 
@@ -179,17 +189,17 @@ endfunction
 function CreateNewPage()
   " create a new index entry and go to the new page
   call CheckIfInIndex()
-  let newdir = input('Enter title of new page: ')
+  let filetitle = input('Enter title of new page: ')
 
-  " check if newdir is empty, then error if it is
-  if newdir ==# ''
+  " check if no title is given, then error if it is
+  if filetitle ==# ''
     echoerr 'No title entered'
     return
   endif
 
   " get the base file name and remove the extension
   let dirname = fnamemodify(expand('%:p'), ':t:r')
-  let newfile = tolower(join(split(newdir, ' '), '_')) . '.md'
+  let newfile = tolower(join(split(filetitle, ' '), '_')) . '.md'
   let fullpath = (dirname ==# 'index') ? newfile : '../' . dirname . '/' . newfile
 
   " check if file already exists, then error if it does
@@ -199,9 +209,9 @@ function CreateNewPage()
   endif
 
   " write the new filename to the page and go to it
-  call append(line('.'), '- [' . newdir . '](' . fullpath . ')')
+  call append(line('.'), '- [' . filetitle . '](' . fullpath . ')')
   normal! j
-  call GoToNoteFile('edit')
+  call GoToNoteFile('edit', filetitle)
 endfunction
 
 let g:browser = GetBrowserSubCommand()

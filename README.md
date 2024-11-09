@@ -4,6 +4,8 @@ A very tiny & simple notebook for vim.
 
 Heavily inspired by [vimwiki](https://github.com/vimwiki/vimwiki).
 
+Compatible with Vim8.1+
+
 ## Key Bindings
 
 Normal Mode:
