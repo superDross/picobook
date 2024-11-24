@@ -8,7 +8,6 @@ endfunction
 
 function CheckIfInIndex()
   try
-    echo expand('%:p:h')
     if stridx(expand('%:p:h'), '/_indexes') == -1
       throw 'Command invalid outside index page'
     endif
@@ -18,13 +17,12 @@ function CheckIfInIndex()
 endfunction
 
 
-function ExtractPath()
-  " extracts path link under cursor
-  let line = getline('.')
+function ExtractPath(text = getline('.'))
+  " extracts path link under cursor as is (relative path)
   try
     " if startswith '-' and has brackets
-    if line =~# '^-' && line =~# '(' && line =~# ')'
-      return matchstr(line, '(\zs.\{-}\ze)')
+    if a:text =~# '^-' && a:text =~# '(' && a:text =~# ')'
+      return matchstr(a:text, '(\zs.\{-}\ze)')
     else
       throw 'not valid line'
     endif
@@ -34,24 +32,24 @@ function ExtractPath()
 endfunction
 
 
-function GetNoteFileName()
-  let partialPath = ExtractPath()
+function ExtractFullPath(partialPath = ExtractPath())
+  " gets the relative path under the cursor (or parsed) and returns the full path
 
   " make sure partialPath starts with '../'
   " ignore that does not contain / as they are index files
-  if partialPath[:2] !=# '../' && partialPath =~# '/'
+  if a:partialPath[:2] !=# '../' && a:partialPath =~# '/'
     normal! 0f(a../
-    let partialPath = '../' . partialPath
+    let a:partialPath = '../' . a:partialPath
   endif
 
   " e.g. /home/demon/notes/_indexes/languages.md
-  return expand(g:notesdir . '/_indexes/' . partialPath)
+  return expand(g:notesdir . '/_indexes/' . a:partialPath)
 endfunction
 
 
 function DeleteNoteFile()
   call CheckIfInIndex()
-  let note_file = GetNoteFileName()
+  let note_file = ExtractFullPath()
   let answer = input('Delete file? (y/n):  ')
   if answer ==# 'y'
     call delete(note_file)
@@ -67,7 +65,7 @@ function MoveNoteFile()
   call CheckIfInIndex()
 
   " get path for current file under cursor
-  let filepath = GetNoteFileName()
+  let filepath = ExtractFullPath()
   let relativepath = ExtractPath()
   let filename = fnamemodify( filepath, ':p:t')
 
@@ -132,7 +130,7 @@ function GoToNoteFile(opencommand, title = v:null)
   " open and/or create the note file under the cursor and create a back button, if not
   " already present
   call CheckIfInIndex()
-  let note_file = GetNoteFileName()
+  let note_file = ExtractFullPath()
   call CreateParentDir(note_file)
   silent! write
   let current_index_path = expand('%:p')
@@ -159,7 +157,7 @@ endfunction
 
 function OpenPageInBrowser()
   call CheckIfInIndex()
-  let filepath = GetNoteFileName()
+  let filepath = ExtractFullPath()
   call system(g:browser . ' ' . filepath)
 endfunction
 
@@ -217,16 +215,16 @@ function CreateNewPage()
   let dirname = fnamemodify(expand('%:p'), ':t:r')
   let dirname = (subtitle ==# '') ? dirname : dirname . '/' . subtitle
   let newfile = tolower(join(split(filetitle, ' '), '_')) . '.md'
-  let fullpath = (dirname ==# 'index') ? newfile : '../' . dirname . '/' . newfile
+  let relpath = (dirname ==# 'index') ? newfile : '../' . dirname . '/' . newfile
 
   " check if file already exists, then error if it does
-  if filereadable(fullpath)
+  if filereadable(ExtractFullPath(relpath))
     echoerr 'File already exists'
     return
   endif
 
   " write the new filename to the page and go to it
-  call append(line('.'), '- [' . filetitle . '](' . fullpath . ')')
+  call append(line('.'), '- [' . filetitle . '](' . relpath . ')')
   normal! j
   call GoToNoteFile('edit', filetitle)
 endfunction
