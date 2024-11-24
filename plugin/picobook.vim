@@ -1,6 +1,9 @@
 function CreateParentDir(filepath)
   " create the directories for the file if they do not exist
   let dirpath = expand(fnamemodify(a:filepath, ':h'))
+  if stridx(dirpath, expand(g:notesdir)) == -1
+    throw 'Directories and files can only be created within the notes directory: ' . g:notesdir
+  endif
   if !filereadable(dirpath)
     call mkdir(dirpath, 'p')
   endif
