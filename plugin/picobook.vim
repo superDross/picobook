@@ -1,14 +1,15 @@
 function CreateParentDir(filepath)
   let dirpath = fnamemodify(a:filepath, ':h')
   if !filereadable(dirpath)
-    call system('mkdir ' . dirpath)
+    call mkdir(dirpath, 'p')
   endif
 endfunction
 
 
 function CheckIfInIndex()
   try
-    if stridx(expand('%h'), '_indexes/') == -1
+    echo expand('%:p:h')
+    if stridx(expand('%:p:h'), '/_indexes') == -1
       throw 'Command invalid outside index page'
     endif
   catch /.invalid outside index/
@@ -186,6 +187,20 @@ function GetBrowserSubCommand()
 endfunction
 
 
+function GetSubtitle()
+  " gets the text of the title at the ## level and returns it, if it exists
+  let pos = getpos('.')
+  let match_post = search('^## [A-Za-z].*', 'bW')
+  let subtitle = ''
+  if match_post > 0
+    execute match_post | norm 0W"zy$
+    let subtitle = substitute(tolower(getreg('z')), ' ', '_', 'g')
+  endif
+  call setpos('.', pos)
+  return subtitle
+endfunction
+
+
 function CreateNewPage()
   " create a new index entry and go to the new page
   call CheckIfInIndex()
@@ -198,7 +213,9 @@ function CreateNewPage()
   endif
 
   " get the base file name and remove the extension
+  let subtitle = GetSubtitle()
   let dirname = fnamemodify(expand('%:p'), ':t:r')
+  let dirname = (subtitle ==# '') ? dirname : dirname . '/' . subtitle
   let newfile = tolower(join(split(filetitle, ' '), '_')) . '.md'
   let fullpath = (dirname ==# 'index') ? newfile : '../' . dirname . '/' . newfile
 
