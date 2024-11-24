@@ -106,6 +106,9 @@ endfunction
 function AddPageHeader(back_filepath, title = v:null)
   " ensures a back button, table of contents and title are present at the top
   " of the file
+  if expand('%:e') !=# 'md'
+    return
+  endif
 
   " back_marker is used to check if back button already exists
   if search('\<back-button-picobook\>', 'nw') == 1 && &filetype ==# 'markdown'
