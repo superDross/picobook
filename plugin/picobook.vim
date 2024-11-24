@@ -1,5 +1,5 @@
 function CreateParentDir(filepath)
-  let dirpath = fnamemodify(a:filepath, ':h')
+  let dirpath = expand(fnamemodify(a:filepath, ':h'))
   if !filereadable(dirpath)
     call mkdir(dirpath, 'p')
   endif
@@ -198,6 +198,14 @@ function GetSubtitle()
   return subtitle
 endfunction
 
+function CreateFilePath(filetitle)
+  " creates a relative file path with the file title and subtitle
+  let subtitle = GetSubtitle()
+  let dirname = fnamemodify(expand('%:p'), ':t:r')
+  let dirname = (subtitle ==# '') ? dirname : dirname . '/' . subtitle
+  let newfile = tolower(join(split(a:filetitle, ' '), '_')) . '.md'
+  return (dirname ==# 'index') ? newfile : '../' . dirname . '/' . newfile
+endfunction
 
 function CreateNewPage()
   " create a new index entry and go to the new page
@@ -210,14 +218,8 @@ function CreateNewPage()
     return
   endif
 
-  " get the base file name and remove the extension
-  let subtitle = GetSubtitle()
-  let dirname = fnamemodify(expand('%:p'), ':t:r')
-  let dirname = (subtitle ==# '') ? dirname : dirname . '/' . subtitle
-  let newfile = tolower(join(split(filetitle, ' '), '_')) . '.md'
-  let relpath = (dirname ==# 'index') ? newfile : '../' . dirname . '/' . newfile
-
   " check if file already exists, then error if it does
+  let relpath = CreateFilePath(filetitle)
   if filereadable(ExtractFullPath(relpath))
     echoerr 'File already exists'
     return
