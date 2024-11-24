@@ -1,4 +1,5 @@
 function CreateParentDir(filepath)
+  " create the directories for the file if they do not exist
   let dirpath = expand(fnamemodify(a:filepath, ':h'))
   if !filereadable(dirpath)
     call mkdir(dirpath, 'p')
@@ -102,9 +103,9 @@ function MoveNoteFile()
 endfunction
 
 
-function AddBackButton(back_filepath, title = v:null)
-  " add a back button to the top of the file, marker and TOC with optional
-  " title
+function AddPageHeader(back_filepath, title = v:null)
+  " ensures a back button, table of contents and title are present at the top
+  " of the file
 
   " back_marker is used to check if back button already exists
   if search('\<back-button-picobook\>', 'nw') == 1 && &filetype ==# 'markdown'
@@ -136,7 +137,7 @@ function GoToNoteFile(opencommand, title = v:null)
   let current_index_path = expand('%:p')
   execute a:opencommand . note_file
   let back_file_path = picobook#utils#GetRelativePath(current_index_path, expand('%:p'))
-  call AddBackButton(back_file_path, a:title)
+  call AddPageHeader(back_file_path, a:title)
 endfunction
 
 
@@ -198,6 +199,7 @@ function GetSubtitle()
   return subtitle
 endfunction
 
+
 function CreateFilePath(filetitle)
   " creates a relative file path with the file title and subtitle
   let subtitle = GetSubtitle()
@@ -206,6 +208,7 @@ function CreateFilePath(filetitle)
   let newfile = tolower(join(split(a:filetitle, ' '), '_')) . '.md'
   return (dirname ==# 'index') ? newfile : '../' . dirname . '/' . newfile
 endfunction
+
 
 function CreateNewPage()
   " create a new index entry and go to the new page
@@ -230,6 +233,7 @@ function CreateNewPage()
   normal! j
   call GoToNoteFile('edit', filetitle)
 endfunction
+
 
 let g:browser = GetBrowserSubCommand()
 
