@@ -1,14 +1,18 @@
 function CreateParentDir(filepath)
-  let dirpath = fnamemodify(a:filepath, ':h')
+  " create the directories for the file if they do not exist
+  let dirpath = expand(fnamemodify(a:filepath, ':h'))
+  if stridx(dirpath, expand(g:notesdir)) == -1
+    throw 'Directories and files can only be created within the notes directory: ' . g:notesdir
+  endif
   if !filereadable(dirpath)
-    call system('mkdir ' . dirpath)
+    call mkdir(dirpath, 'p')
   endif
 endfunction
 
 
 function CheckIfInIndex()
   try
-    if stridx(expand('%h'), '_indexes/') == -1
+    if stridx(expand('%:p:h'), '/_indexes') == -1
       throw 'Command invalid outside index page'
     endif
   catch /.invalid outside index/
@@ -17,13 +21,12 @@ function CheckIfInIndex()
 endfunction
 
 
-function ExtractPath()
-  " extracts path link under cursor
-  let line = getline('.')
+function ExtractPath(text = getline('.'))
+  " extracts path link under cursor as is (relative path)
   try
     " if startswith '-' and has brackets
-    if line =~# '^-' && line =~# '(' && line =~# ')'
-      return matchstr(line, '(\zs.\{-}\ze)')
+    if a:text =~# '^-' && a:text =~# '(' && a:text =~# ')'
+      return matchstr(a:text, '(\zs.\{-}\ze)')
     else
       throw 'not valid line'
     endif
@@ -33,24 +36,24 @@ function ExtractPath()
 endfunction
 
 
-function GetNoteFileName()
-  let partialPath = ExtractPath()
+function ExtractFullPath(partialPath = ExtractPath())
+  " gets the relative path under the cursor (or parsed) and returns the full path
 
   " make sure partialPath starts with '../'
   " ignore that does not contain / as they are index files
-  if partialPath[:2] !=# '../' && partialPath =~# '/'
+  if a:partialPath[:2] !=# '../' && a:partialPath =~# '/'
     normal! 0f(a../
-    let partialPath = '../' . partialPath
+    let a:partialPath = '../' . a:partialPath
   endif
 
   " e.g. /home/demon/notes/_indexes/languages.md
-  return expand(g:notesdir . '/_indexes/' . partialPath)
+  return expand(g:notesdir . '/_indexes/' . a:partialPath)
 endfunction
 
 
 function DeleteNoteFile()
   call CheckIfInIndex()
-  let note_file = GetNoteFileName()
+  let note_file = ExtractFullPath()
   let answer = input('Delete file? (y/n):  ')
   if answer ==# 'y'
     call delete(note_file)
@@ -66,7 +69,7 @@ function MoveNoteFile()
   call CheckIfInIndex()
 
   " get path for current file under cursor
-  let filepath = GetNoteFileName()
+  let filepath = ExtractFullPath()
   let relativepath = ExtractPath()
   let filename = fnamemodify( filepath, ':p:t')
 
@@ -103,9 +106,12 @@ function MoveNoteFile()
 endfunction
 
 
-function AddBackButton(back_filepath, title = v:null)
-  " add a back button to the top of the file, marker and TOC with optional
-  " title
+function AddPageHeader(back_filepath, title = v:null)
+  " ensures a back button, table of contents and title are present at the top
+  " of the file
+  if expand('%:e') !=# 'md'
+    return
+  endif
 
   " back_marker is used to check if back button already exists
   if search('\<back-button-picobook\>', 'nw') == 1 && &filetype ==# 'markdown'
@@ -131,13 +137,13 @@ function GoToNoteFile(opencommand, title = v:null)
   " open and/or create the note file under the cursor and create a back button, if not
   " already present
   call CheckIfInIndex()
-  let note_file = GetNoteFileName()
+  let note_file = ExtractFullPath()
   call CreateParentDir(note_file)
   silent! write
   let current_index_path = expand('%:p')
   execute a:opencommand . note_file
   let back_file_path = picobook#utils#GetRelativePath(current_index_path, expand('%:p'))
-  call AddBackButton(back_file_path, a:title)
+  call AddPageHeader(back_file_path, a:title)
 endfunction
 
 
@@ -158,7 +164,7 @@ endfunction
 
 function OpenPageInBrowser()
   call CheckIfInIndex()
-  let filepath = GetNoteFileName()
+  let filepath = ExtractFullPath()
   call system(g:browser . ' ' . filepath)
 endfunction
 
@@ -186,6 +192,30 @@ function GetBrowserSubCommand()
 endfunction
 
 
+function GetSubtitle()
+  " gets the text of the title at the ## level and returns it, if it exists
+  let pos = getpos('.')
+  let match_post = search('^## [A-Za-z].*', 'bW')
+  let subtitle = ''
+  if match_post > 0
+    execute match_post | norm 0W"zy$
+    let subtitle = substitute(tolower(getreg('z')), ' ', '_', 'g')
+  endif
+  call setpos('.', pos)
+  return subtitle
+endfunction
+
+
+function CreateFilePath(filetitle)
+  " creates a relative file path with the file title and subtitle
+  let subtitle = GetSubtitle()
+  let dirname = fnamemodify(expand('%:p'), ':t:r')
+  let dirname = (subtitle ==# '') ? dirname : dirname . '/' . subtitle
+  let newfile = tolower(join(split(a:filetitle, ' '), '_')) . '.md'
+  return (dirname ==# 'index') ? newfile : '../' . dirname . '/' . newfile
+endfunction
+
+
 function CreateNewPage()
   " create a new index entry and go to the new page
   call CheckIfInIndex()
@@ -197,22 +227,19 @@ function CreateNewPage()
     return
   endif
 
-  " get the base file name and remove the extension
-  let dirname = fnamemodify(expand('%:p'), ':t:r')
-  let newfile = tolower(join(split(filetitle, ' '), '_')) . '.md'
-  let fullpath = (dirname ==# 'index') ? newfile : '../' . dirname . '/' . newfile
-
   " check if file already exists, then error if it does
-  if filereadable(fullpath)
+  let relpath = CreateFilePath(filetitle)
+  if filereadable(ExtractFullPath(relpath))
     echoerr 'File already exists'
     return
   endif
 
   " write the new filename to the page and go to it
-  call append(line('.'), '- [' . filetitle . '](' . fullpath . ')')
+  call append(line('.'), '- [' . filetitle . '](' . relpath . ')')
   normal! j
   call GoToNoteFile('edit', filetitle)
 endfunction
+
 
 let g:browser = GetBrowserSubCommand()
 
