@@ -1,10 +1,41 @@
 Before:
   let g:notesdir = expand('/tmp/piconotes')
 
+After:
+  :call delete(g:notesdir . '/_indexes/test_index.md')
+  
+
 Execute(expect GoToIndex goes to and creates file):
   :call GoToIndex()
   AssertEqual 
     \ expand('%:p'), 
     \ expand(g:notesdir . '/_indexes/index.md')
 
+Execute(expect CreateNewPage creates a new index page from the index):
+  :call GoToIndex()
+  :call CreateNewPage('Test Index')
+  AssertEqual 
+    \ expand('%:p'), 
+    \ expand(g:notesdir . '/_indexes/test_index.md')
+
+Execute(expect CreateNewPage adds the page header to a new file):
+  :call GoToIndex()
+  :call CreateNewPage('Test Index')
+  AssertEqual 
+    \ getline(1),
+    \ "<!-- back-button-picobook -->"
+  AssertEqual
+    \ getline(2),
+    \ "[Back](./index.md)"
+  AssertEqual
+    \ getline(4),
+    \ "[TOC]"
+  AssertEqual
+    \ getline(6),
+    \ "# Test Index"
+
+
+
+
+  
   

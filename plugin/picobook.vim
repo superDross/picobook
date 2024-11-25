@@ -222,13 +222,13 @@ function CreateFilePath(filetitle)
 endfunction
 
 
-function CreateNewPage()
+function CreateNewPage(filetitle = v:null)
   " create a new index entry and go to the new page
   call CheckIfInIndex()
 
   " check if no title is given, then error if it is
   try
-    let filetitle = input('Enter title of new page: ')
+    let filetitle = (a:filetitle == v:null) ? input('Enter title of new page: ') : a:filetitle
     if filetitle ==# ''
       throw 'No title entered'
     endif
