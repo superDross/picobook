@@ -34,8 +34,27 @@ Execute(expect CreateNewPage adds the page header to a new file):
     \ getline(6),
     \ "# Test Index"
 
+Execute(expect CreateNewPage creates a new page from the test index):
+  :call GoToIndex()
+  :call CreateNewPage('Test Index')
+  :call CreateNewPage('Test Page')
+  AssertEqual 
+    \ expand('%:p'), 
+    \ '/tmp/piconotes/test_index/test_page.md'
 
+Execute(expect CreateNewPage creates a new page from the test index with subtitle):
+  :call GoToIndex()
+  :call CreateNewPage('Test Index')
+  :norm i## Subtitle
+  :norm o
+  :call CreateNewPage('Test Page')
+  AssertEqual 
+    \ expand('%:p'), 
+    \ '/tmp/piconotes/test_index/subtitle/test_page.md'
 
-
-  
-  
+Execute(expect error when CreateNewPage is executed and the page exists):
+  :call GoToIndex()
+  :call CreateNewPage('Test Index')
+  :call GoToIndex()
+  AssertThrows
+    \ :call CreateNewPage('Test Index')
