@@ -115,7 +115,7 @@ endfunction
 function AddPageHeader(back_filepath, title = v:null)
   " ensures a back button, table of contents and title are present at the top
   " of the file
-  if expand('%:e') !=# 'md'
+  if expand('%:e') !=# 'md' || getline(1) =~ 'GITCRYPT'
     return
   endif
 
