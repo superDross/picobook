@@ -1,9 +1,14 @@
 function CreateParentDir(filepath)
   " create the directories for the file if they do not exist
-  let dirpath = expand(fnamemodify(a:filepath, ':h'))
-  if stridx(dirpath, expand(g:notesdir)) == -1
-    throw 'Directories and files can only be created within the notes directory: ' . g:notesdir
-  endif
+  try
+    let dirpath = expand(fnamemodify(a:filepath, ':h'))
+    if stridx(dirpath, expand(g:notesdir)) == -1
+      throw 'Directories and files can only be created within the notes directory: ' . g:notesdir
+    endif
+  catch
+    echoerr 'Caught error: ' . v:exception
+  endtry
+
   if !filereadable(dirpath)
     call mkdir(dirpath, 'p')
   endif
@@ -13,10 +18,10 @@ endfunction
 function CheckIfInIndex()
   try
     if stridx(expand('%:p:h'), '/_indexes') == -1
-      throw 'Command invalid outside index page'
+      throw 'Command only valid within picobook index files'
     endif
-  catch /.invalid outside index/
-    echoerr 'Command only valid within picobook index files'
+  catch
+    echoerr 'Caught error: ' . v:exception
   endtry
 endfunction
 
@@ -28,26 +33,27 @@ function ExtractPath(text = getline('.'))
     if a:text =~# '^-' && a:text =~# '(' && a:text =~# ')'
       return matchstr(a:text, '(\zs.\{-}\ze)')
     else
-      throw 'not valid line'
+      throw 'No path found on the current line'
     endif
-  catch /not valid line/
-    echoerr 'This line does not contain a valid link; must start with "-" and contain brackets "()"'
+  catch 
+    echoerr 'Caught error: ' . v:exception
   endtry
 endfunction
 
 
-function ExtractFullPath(partialPath = ExtractPath())
+function ExtractFullPath(partialPath = '')
   " gets the relative path under the cursor (or parsed) and returns the full path
 
   " make sure partialPath starts with '../'
   " ignore that does not contain / as they are index files
-  if a:partialPath[:2] !=# '../' && a:partialPath =~# '/'
+  let partialPath = (a:partialPath ==# '') ? ExtractPath() : a:partialPath
+  if partialPath[:2] !=# '../' && partialPath =~# '/'
     normal! 0f(a../
-    let a:partialPath = '../' . a:partialPath
+    let partialPath = '../' . partialPath
   endif
 
   " e.g. /home/demon/notes/_indexes/languages.md
-  return expand(g:notesdir . '/_indexes/' . a:partialPath)
+  return expand(g:notesdir . '/_indexes/' . partialPath)
 endfunction
 
 
@@ -219,20 +225,26 @@ endfunction
 function CreateNewPage()
   " create a new index entry and go to the new page
   call CheckIfInIndex()
-  let filetitle = input('Enter title of new page: ')
 
   " check if no title is given, then error if it is
-  if filetitle ==# ''
-    echoerr 'No title entered'
-    return
-  endif
+  try
+    let filetitle = input('Enter title of new page: ')
+    if filetitle ==# ''
+      throw 'No title entered'
+    endif
+  catch
+    echoerr 'Caught Exception: ' . v:exception
+  endtry
 
   " check if file already exists, then error if it does
-  let relpath = CreateFilePath(filetitle)
-  if filereadable(ExtractFullPath(relpath))
-    echoerr 'File already exists'
-    return
-  endif
+  try
+    let relpath = CreateFilePath(filetitle)
+    if filereadable(ExtractFullPath(relpath))
+      throw 'File already exists'
+    endif
+  catch
+    echoerr 'Caught Exception: ' . v:exception
+  endtry
 
   " write the new filename to the page and go to it
   call append(line('.'), '- [' . filetitle . '](' . relpath . ')')
