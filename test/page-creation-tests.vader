@@ -2,6 +2,7 @@ Before:
   let g:notesdir = expand('/tmp/piconotes')
 
 After:
+  :call delete(g:notesdir . '/_indexes/index.md')
   :call delete(g:notesdir . '/_indexes/test_index.md')
   
 
@@ -17,6 +18,15 @@ Execute(expect CreateNewPage creates a new index page from the index):
   AssertEqual 
     \ expand('%:p'), 
     \ expand(g:notesdir . '/_indexes/test_index.md')
+
+" TODO: this needs to be fixed
+Execute(expect CreateNewPage creates the link from the index correctly):
+  :call GoToIndex()
+  :call CreateNewPage('Test Index')
+  :call GoToIndex()
+  AssertEqual 
+    \ getline('.') 
+    \ "- [Test Index](./test_index.md)"
 
 Execute(expect CreateNewPage adds the page header to a new file):
   :call GoToIndex()
@@ -58,3 +68,8 @@ Execute(expect error when CreateNewPage is executed and the page exists):
   :call GoToIndex()
   AssertThrows
     \ :call CreateNewPage('Test Index')
+
+Execute(expect error when CreateNewPage is given no title):
+  :call GoToIndex()
+  AssertThrows
+    \ :call CreateNewPage('')
