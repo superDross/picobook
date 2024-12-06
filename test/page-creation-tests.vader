@@ -5,7 +5,6 @@ After:
   :call delete(g:notesdir . '/_indexes/index.md')
   :call delete(g:notesdir . '/_indexes/test_index.md')
   
-
 Execute(expect GoToIndex goes to and creates file):
   :call GoToIndex()
   AssertEqual 
@@ -19,14 +18,14 @@ Execute(expect CreateNewPage creates a new index page from the index):
     \ expand('%:p'), 
     \ expand(g:notesdir . '/_indexes/test_index.md')
 
-" TODO: this needs to be fixed
 Execute(expect CreateNewPage creates the link from the index correctly):
   :call GoToIndex()
   :call CreateNewPage('Test Index')
   :call GoToIndex()
+  :/\[Test Index\]
   AssertEqual 
-    \ getline('.') 
-    \ "- [Test Index](./test_index.md)"
+    \ getline('.'),
+    \ "- [Test Index](test_index.md)"
 
 Execute(expect CreateNewPage adds the page header to a new file):
   :call GoToIndex()
@@ -44,13 +43,39 @@ Execute(expect CreateNewPage adds the page header to a new file):
     \ getline(6),
     \ "# Test Index"
 
-Execute(expect CreateNewPage creates a new page from the test index):
+Execute(expect CreateNewPage to only create the header once):
+  :call GoToIndex()
+  :call CreateNewPage('Test Index')
+  :call GoToIndex()
+  :/\[Test Index\]
+  :call GoToNoteFile('edit')
+  :/<!-- back-button-picobook -->
+  let line1 = line('.')
+  :/<!-- back-button-picobook -->
+  let line2 = line('.')
+  AssertEqual
+    \ line1,
+    \ line2
+
+Execute(expect CreateNewPage creates a new page from the test index with a header):
   :call GoToIndex()
   :call CreateNewPage('Test Index')
   :call CreateNewPage('Test Page')
   AssertEqual 
     \ expand('%:p'), 
     \ '/tmp/piconotes/test_index/test_page.md'
+  AssertEqual 
+    \ getline(1),
+    \ "<!-- back-button-picobook -->"
+  AssertEqual
+    \ getline(2),
+    \ "[Back](../_indexes/test_index.md)"
+  AssertEqual
+    \ getline(4),
+    \ "[TOC]"
+  AssertEqual
+    \ getline(6),
+    \ "# Test Page"
 
 Execute(expect CreateNewPage creates a new page from the test index with subtitle):
   :call GoToIndex()

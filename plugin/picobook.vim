@@ -214,11 +214,14 @@ endfunction
 
 function CreateFilePath(filetitle)
   " creates a relative file path with the file title and subtitle
+  let newfile = tolower(join(split(a:filetitle, ' '), '_')) . '.md'
+  if expand('%:p') ==# expand(g:notesdir) . '/_indexes/index.md'
+    return newfile
+  endif
   let subtitle = GetSubtitle()
   let dirname = fnamemodify(expand('%:p'), ':t:r')
   let dirname = (subtitle ==# '') ? dirname : dirname . '/' . subtitle
-  let newfile = tolower(join(split(a:filetitle, ' '), '_')) . '.md'
-  return (dirname ==# 'index') ? newfile : '../' . dirname . '/' . newfile
+  return '../' . dirname . '/' . newfile
 endfunction
 
 
