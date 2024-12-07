@@ -1,5 +1,4 @@
 Before:
-  let g:notesdir = expand('/tmp/piconotes/')
   " create some base data
   :call GoToIndex()
   :norm G

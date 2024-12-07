@@ -272,7 +272,17 @@ function CreateNewPage(filetitle = v:null)
 endfunction
 
 
+if !exists('g:notesdir')
+  echohl WarningMsg
+  echomsg '[WARNING] g:notesdir not set, set it to the directory containing your notes'
+  echohl None
+  finish
+endif
+
+" ensure g:notesdir is set as expected
+let g:notesdir = (g:notesdir[-1] ==# '/') ? expand(g:notesdir) : expand(g:notesdir . '/')
 let g:browser = GetBrowserSubCommand()
+
 
 command! GoToIndex :call GoToIndex()
 command! -bang -nargs=* GrepPicoNotes :call picobook#fzf#FzfNotes(<q-args>)
