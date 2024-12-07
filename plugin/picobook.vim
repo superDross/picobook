@@ -120,7 +120,7 @@ endfunction
 function AddPageHeader(back_filepath, title = v:null)
   " ensures a back button, table of contents and title are present at the top
   " of the file
-  if expand('%:e') !=# 'md' || getline(1) =~ 'GITCRYPT'
+  if expand('%:e') !=# 'md' || getline(1) =~# 'GITCRYPT'
     return
   endif
 
@@ -213,7 +213,7 @@ function GetSubtitle()
   let match_post = search('^## [A-Za-z].*', 'bW')
   let subtitle = ''
   if match_post > 0
-    execute match_post | norm 0W"zy$
+    execute match_post | norm! 0W"zy$
     let subtitle = substitute(tolower(getreg('z')), ' ', '_', 'g')
   endif
   call setpos('.', pos)
