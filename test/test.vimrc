@@ -5,3 +5,6 @@ set rtp+=.
 set rtp+=after
 filetype plugin indent on
 syntax enable
+
+" plugin variables
+let g:notesdir = '/tmp/piconotes'

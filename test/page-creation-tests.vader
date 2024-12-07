@@ -1,0 +1,115 @@
+After:
+  :silent !rm -rf /tmp/piconotes/*
+
+Execute(expect g:notesdir to end with forward slash even if one is not given):
+  AssertEqual
+  \ g:notesdir,
+  \ '/tmp/piconotes/'
+
+  
+Execute(expect GoToIndex goes to and creates file):
+  AssertEqual
+  \ filereadable(g:notesdir . '_indexes/index.md'),
+  \ 0
+  :call GoToIndex()
+  AssertEqual 
+    \ expand('%:p'), 
+    \ expand(g:notesdir . '/_indexes/index.md')
+
+Execute(expect GoToIndex create new file with expected template):
+  :call GoToIndex()
+  AssertEqual 
+    \ getline(1),
+    \ "# Piconotes"
+  AssertEqual
+    \ getline(3),
+    \ "[TOC]"
+  AssertEqual
+    \ getline(5),
+    \ "## Indexes"
+
+Execute(expect GoToIndex create new file but does not duplicate the template):
+  :call GoToIndex()
+  :call GoToIndex()
+  :call GoToIndex()
+  :/\[TOC\]
+  let line1 = line('.')
+  :/\[TOC\]
+  let line2 = line('.')
+  AssertEqual
+    \ line1,
+    \ line2
+
+Execute(expect CreateNewPage creates a new index page from the index):
+  :call GoToIndex()
+  :call CreateNewPage('Test Index')
+  AssertEqual 
+    \ expand('%:p'), 
+    \ expand(g:notesdir . '/_indexes/test_index.md')
+
+Execute(expect CreateNewPage creates the link from the index correctly):
+  :call GoToIndex()
+  :call CreateNewPage('Test Index')
+  :call GoToIndex()
+  :/\[Test Index\]
+  AssertEqual 
+    \ getline('.'),
+    \ "- [Test Index](test_index.md)"
+
+Execute(expect CreateNewPage adds the page header to a new file):
+  :call GoToIndex()
+  :call CreateNewPage('Test Index')
+  AssertEqual 
+    \ getline(1),
+    \ "<!-- back-button-picobook -->"
+  AssertEqual
+    \ getline(2),
+    \ "[Back](./index.md)"
+  AssertEqual
+    \ getline(4),
+    \ "[TOC]"
+  AssertEqual
+    \ getline(6),
+    \ "# Test Index"
+
+Execute(expect CreateNewPage creates a new page from the test index with a header):
+  :call GoToIndex()
+  :call CreateNewPage('Test Index')
+  :call CreateNewPage('Test Page')
+  AssertEqual 
+    \ expand('%:p'), 
+    \ '/tmp/piconotes/test_index/test_page.md'
+  AssertEqual 
+    \ getline(1),
+    \ "<!-- back-button-picobook -->"
+  AssertEqual
+    \ getline(2),
+    \ "[Back](../_indexes/test_index.md)"
+  AssertEqual
+    \ getline(4),
+    \ "[TOC]"
+  AssertEqual
+    \ getline(6),
+    \ "# Test Page"
+
+Execute(expect CreateNewPage creates a new page from the test index with subtitle):
+  :call GoToIndex()
+  :call CreateNewPage('Test Index')
+  :norm i## Subtitle
+  :norm o
+  :call CreateNewPage('Test Page')
+  AssertEqual 
+    \ expand('%:p'), 
+    \ '/tmp/piconotes/test_index/subtitle/test_page.md'
+
+Execute(expect error when CreateNewPage is executed and the page exists):
+  :call GoToIndex()
+  :call CreateNewPage('Test Index')
+  :call GoToIndex()
+  AssertThrows
+    \ :call CreateNewPage('Test Index')
+
+Execute(expect error when CreateNewPage is given no title):
+  :call GoToIndex()
+  AssertThrows
+    \ :call CreateNewPage('')
