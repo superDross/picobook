@@ -15,7 +15,7 @@ function CreateParentDir(filepath)
 endfunction
 
 
-function CheckIfInIndex()
+function RaiseErrorIfNotInIndex()
   try
     if stridx(expand('%:p:h'), '/_indexes') == -1
       throw 'Command only valid within picobook index files'
@@ -57,10 +57,10 @@ function ExtractFullPath(partialPath = '')
 endfunction
 
 
-function DeleteNoteFile()
-  call CheckIfInIndex()
+function DeleteNoteFile(confirmation = 1)
+  call RaiseErrorIfNotInIndex()
   let note_file = ExtractFullPath()
-  let answer = input('Delete file? (y/n):  ')
+  let answer = (a:confirmation == 1) ? input('Delete file? (y/n): ') : 'y'
   if answer ==# 'y'
     call delete(note_file)
     execute 'delete'
@@ -69,10 +69,10 @@ function DeleteNoteFile()
 endfunction
 
 
-function MoveNoteFile()
+function MoveNoteFile(newdir = v:null, confirmation = 1)
 
   " only allow function if executed within an index file
-  call CheckIfInIndex()
+  call RaiseErrorIfNotInIndex()
 
   " get path for current file under cursor
   let filepath = ExtractFullPath()
@@ -80,7 +80,8 @@ function MoveNoteFile()
   let filename = fnamemodify( filepath, ':p:t')
 
   " append forward slash if not present on new directory
-  let newdir = input('Enter new directory (relative to the top level dir): ')
+  let q = 'Enter new directory (relative to the top level dir): '
+  let newdir = (a:newdir == v:null) ? input(q) : a:newdir
   if newdir[-1:] !=# '/'
     let newdir = newdir . '/'
   endif
@@ -91,17 +92,21 @@ function MoveNoteFile()
 
   " e.g. ~/bin/piconotes/ -> piconotes/
   let rootdir =  fnamemodify(substitute(expand(g:notesdir), '/$', '', ''), ':t') . '/'
-  let confirmation = input(
-  \  'Move file from ' . relativepath .
-  \  ' to ' . rootdir . new_relativepath . '? (y/n): '
-  \)
+  if a:confirmation ==# 1
+    let confirmation = input(
+    \  'Move file from ' . relativepath .
+    \  ' to ' . rootdir . new_relativepath . '? (y/n): '
+    \)
+  else
+    let confirmation = 'y'
+  endif
 
   if confirmation ==# 'y'
     " s/currentname/newname/
     let new_line = substitute(
     \  getline('.'),
     \  relativepath,
-    \  new_relativepath,
+    \  '../' . new_relativepath,
     \  ''
     \)
     call system('mkdir -p ' . fnamemodify(new_filename, ':p:h'))
@@ -142,7 +147,7 @@ endfunction
 function GoToNoteFile(opencommand, title = v:null)
   " open and/or create the note file under the cursor and create a back button, if not
   " already present
-  call CheckIfInIndex()
+  call RaiseErrorIfNotInIndex()
   let note_file = ExtractFullPath()
   call CreateParentDir(note_file)
   silent! write
@@ -154,7 +159,7 @@ endfunction
 
 
 function OpenPageInGitHub()
-  call CheckIfInIndex()
+  call RaiseErrorIfNotInIndex()
   let partialPath = ExtractPath()
   " is index file
   if partialPath !~# '/'
@@ -169,7 +174,7 @@ endfunction
 
 
 function OpenPageInBrowser()
-  call CheckIfInIndex()
+  call RaiseErrorIfNotInIndex()
   let filepath = ExtractFullPath()
   call system(g:browser . ' ' . filepath)
 endfunction
@@ -185,6 +190,10 @@ function GoToIndex()
   let indexpath = g:notesdir . '/_indexes/' . 'index.md'
   call CreateParentDir(indexpath)
   execute 'edit ' . indexpath
+  if filereadable(expand(indexpath)) ==# 0
+    call append(0, ['# Piconotes', '', '[TOC]', '', '## Indexes', ''])
+  endif
+  write
 endfunction
 
 
@@ -211,11 +220,17 @@ function GetSubtitle()
   return subtitle
 endfunction
 
+function InIndex()
+  " NOTE: there should not be // in the path, investigate why they appear
+  let here = substitute(expand('%:p'), '//', '/', 'g')
+  let index = substitute(expand(g:notesdir) . '_indexes/index.md', '//', '/', 'g')
+  return (here ==# index) ? 1 : 0
+endfunction
 
 function CreateFilePath(filetitle)
   " creates a relative file path with the file title and subtitle
   let newfile = tolower(join(split(a:filetitle, ' '), '_')) . '.md'
-  if expand('%:p') ==# expand(g:notesdir) . '/_indexes/index.md'
+  if InIndex()
     return newfile
   endif
   let subtitle = GetSubtitle()
@@ -227,7 +242,7 @@ endfunction
 
 function CreateNewPage(filetitle = v:null)
   " create a new index entry and go to the new page
-  call CheckIfInIndex()
+  call RaiseErrorIfNotInIndex()
 
   " check if no title is given, then error if it is
   try
@@ -253,6 +268,7 @@ function CreateNewPage(filetitle = v:null)
   call append(line('.'), '- [' . filetitle . '](' . relpath . ')')
   normal! j
   call GoToNoteFile('edit', filetitle)
+  write
 endfunction
 
 

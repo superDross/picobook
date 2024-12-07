@@ -1,15 +1,41 @@
 Before:
-  let g:notesdir = expand('/tmp/piconotes')
+  let g:notesdir = expand('/tmp/piconotes/')
 
 After:
-  :call delete(g:notesdir . '/_indexes/index.md')
-  :call delete(g:notesdir . '/_indexes/test_index.md')
+  :silent !rm -rf /tmp/piconotes/*
   
 Execute(expect GoToIndex goes to and creates file):
+  AssertEqual
+  \ filereadable(g:notesdir . '_indexes/index.md'),
+  \ 0
   :call GoToIndex()
   AssertEqual 
     \ expand('%:p'), 
     \ expand(g:notesdir . '/_indexes/index.md')
+
+Execute(expect GoToIndex create new file with expected template):
+  :call GoToIndex()
+  AssertEqual 
+    \ getline(1),
+    \ "# Piconotes"
+  AssertEqual
+    \ getline(3),
+    \ "[TOC]"
+  AssertEqual
+    \ getline(5),
+    \ "## Indexes"
+
+Execute(expect GoToIndex create new file but does not duplicate the template):
+  :call GoToIndex()
+  :call GoToIndex()
+  :call GoToIndex()
+  :/\[TOC\]
+  let line1 = line('.')
+  :/\[TOC\]
+  let line2 = line('.')
+  AssertEqual
+    \ line1,
+    \ line2
 
 Execute(expect CreateNewPage creates a new index page from the index):
   :call GoToIndex()
@@ -42,20 +68,6 @@ Execute(expect CreateNewPage adds the page header to a new file):
   AssertEqual
     \ getline(6),
     \ "# Test Index"
-
-Execute(expect CreateNewPage to only create the header once):
-  :call GoToIndex()
-  :call CreateNewPage('Test Index')
-  :call GoToIndex()
-  :/\[Test Index\]
-  :call GoToNoteFile('edit')
-  :/<!-- back-button-picobook -->
-  let line1 = line('.')
-  :/<!-- back-button-picobook -->
-  let line2 = line('.')
-  AssertEqual
-    \ line1,
-    \ line2
 
 Execute(expect CreateNewPage creates a new page from the test index with a header):
   :call GoToIndex()

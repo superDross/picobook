@@ -19,6 +19,7 @@ RUN apk update && apk --no-cache add \
     ninja \
     openssl \
     pkgconf \
+	tree \
     unzip \
     vim \
     wget

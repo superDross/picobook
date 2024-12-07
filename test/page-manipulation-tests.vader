@@ -1,0 +1,72 @@
+Before:
+  let g:notesdir = expand('/tmp/piconotes/')
+  " create some base data
+  :call GoToIndex()
+  :norm G
+  :call CreateNewPage('Test Index')
+  :norm G
+  :call CreateNewPage('Test Page')
+
+After:
+  :silent !rm -rf /tmp/piconotes/*
+
+
+Execute(expect GoToNoteFile to not duplicate the header):
+  :call GoToIndex()
+  :/\[Test Index\]
+  :call GoToNoteFile('edit')
+  :/<!-- back-button-picobook -->
+  let line1 = line('.')
+  :/<!-- back-button-picobook -->
+  let line2 = line('.')
+  AssertEqual
+    \ line1,
+    \ line2
+
+Execute(expect GoToNoteFile to not create back button in encrypted files):
+  :silent !cp /tests/test/files/encrypted-file.py /tmp/piconotes/_indexes/test_index.md
+  :call GoToIndex()
+  :/\[Test Index\]
+  :call GoToNoteFile('edit')
+  AssertEqual
+  \ search('\<back-button-picobook\>', 'nw'),
+  \ 0
+
+Execute(expect DeleteNoteFile to delete the file):
+  AssertEqual
+  \ filereadable(g:notesdir . '/_indexes/test_index.md'),
+  \ 1
+  :call GoToIndex()
+  :/\[Test Index\]
+  :call DeleteNoteFile('y')
+  AssertEqual
+  \ filereadable(g:notesdir . '/_indexes/test_index.md'),
+  \ 0
+
+Execute(expect MoveNoteFile to move the file to a different directory):
+  " ensure the pre-determined state is as expected
+  AssertEqual
+  \ filereadable(g:notesdir . '/test_index/test_page.md'),
+  \ 1
+  AssertEqual
+  \ filereadable(g:notesdir . '/moved_dir/test_page.md'),
+  \ 0
+  " find the dir and navigate to it and move the file
+  :call GoToIndex()
+  :/\[Test Index\]
+  :call GoToNoteFile('edit')
+  :/\[Test Page\]
+  :call MoveNoteFile('moved_dir', 0)
+  " ensure the file has physically moved
+  AssertEqual
+  \ filereadable(g:notesdir . '/test_index/test_page.md'),
+  \ 0
+  AssertEqual
+  \ filereadable(g:notesdir . '/moved_dir/test_page.md'),
+  \ 1
+  " ensure the file path in the link is there
+  AssertEqual
+  \ getline('.'),
+  \ '- [Test Page](../moved_dir/test_page.md)'
+  
+
