@@ -2,9 +2,9 @@ Before:
   " create some base data
   :call GoToIndex()
   :norm! G
-  :call CreateNewPage('Test Index')
+  :call picobook#creation#CreateNewPage('Test Index')
   :norm! G
-  :call CreateNewPage('Test Page')
+  :call picobook#creation#CreateNewPage('Test Page')
 
 After:
   :silent !rm -rf /tmp/piconotes/*

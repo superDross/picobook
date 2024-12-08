@@ -42,14 +42,14 @@ Execute(expect GoToIndex create new file but does not duplicate the template):
 
 Execute(expect CreateNewPage creates a new index page from the index):
   :call GoToIndex()
-  :call CreateNewPage('Test Index')
+  :call picobook#creation#CreateNewPage('Test Index')
   AssertEqual 
     \ expand('%:p'), 
     \ expand(g:notesdir . '/_indexes/test_index.md')
 
 Execute(expect CreateNewPage creates the link from the index correctly):
   :call GoToIndex()
-  :call CreateNewPage('Test Index')
+  :call picobook#creation#CreateNewPage('Test Index')
   :call GoToIndex()
   :/\[Test Index\]
   AssertEqual 
@@ -58,7 +58,7 @@ Execute(expect CreateNewPage creates the link from the index correctly):
 
 Execute(expect CreateNewPage adds the page header to a new file):
   :call GoToIndex()
-  :call CreateNewPage('Test Index')
+  :call picobook#creation#CreateNewPage('Test Index')
   AssertEqual 
     \ getline(1),
     \ "<!-- back-button-picobook -->"
@@ -74,8 +74,8 @@ Execute(expect CreateNewPage adds the page header to a new file):
 
 Execute(expect CreateNewPage creates a new page from the test index with a header):
   :call GoToIndex()
-  :call CreateNewPage('Test Index')
-  :call CreateNewPage('Test Page')
+  :call picobook#creation#CreateNewPage('Test Index')
+  :call picobook#creation#CreateNewPage('Test Page')
   AssertEqual 
     \ expand('%:p'), 
     \ '/tmp/piconotes/test_index/test_page.md'
@@ -94,22 +94,22 @@ Execute(expect CreateNewPage creates a new page from the test index with a heade
 
 Execute(expect CreateNewPage creates a new page from the test index with subtitle):
   :call GoToIndex()
-  :call CreateNewPage('Test Index')
+  :call picobook#creation#CreateNewPage('Test Index')
   :norm! i## Subtitle
   :norm! o
-  :call CreateNewPage('Test Page')
+  :call picobook#creation#CreateNewPage('Test Page')
   AssertEqual 
     \ expand('%:p'), 
     \ '/tmp/piconotes/test_index/subtitle/test_page.md'
 
 Execute(expect error when CreateNewPage is executed and the page exists):
   :call GoToIndex()
-  :call CreateNewPage('Test Index')
+  :call picobook#creation#CreateNewPage('Test Index')
   :call GoToIndex()
   AssertThrows
-    \ :call CreateNewPage('Test Index')
+    \ :call picobook#creation#CreateNewPage('Test Index')
 
 Execute(expect error when CreateNewPage is given no title):
   :call GoToIndex()
   AssertThrows
-    \ :call CreateNewPage('')
+    \ :call picobook#creation#CreateNewPage('')
