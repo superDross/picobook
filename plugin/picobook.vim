@@ -1,37 +1,3 @@
-function GoToNoteFile(opencommand, title = v:null)
-  " open and/or create the note file under the cursor and create a back button, if not
-  " already present
-  call picobook#exceptions#RaiseErrorIfNotInIndex()
-  let note_file = picobook#parsing#ExtractFullPath()
-  call picobook#creation#CreateParentDir(note_file)
-  silent! write
-  let current_index_path = expand('%:p')
-  execute a:opencommand . note_file
-  let back_file_path = picobook#utils#GetRelativePath(current_index_path, expand('%:p'))
-  call picobook#creation#AddPageHeader(back_file_path, a:title)
-endfunction
-
-
-function GoToIndex()
-  let indexpath = g:notesdir . '/_indexes/' . 'index.md'
-  call picobook#creation#CreateParentDir(indexpath)
-  execute 'edit ' . indexpath
-  if filereadable(expand(indexpath)) ==# 0
-    call append(0, ['# Piconotes', '', '[TOC]', '', '## Indexes', ''])
-  endif
-  write
-endfunction
-
-
-function InIndex()
-  " NOTE: there should not be // in the path, investigate why they appear
-  let here = substitute(expand('%:p'), '//', '/', 'g')
-  let index = substitute(expand(g:notesdir) . '_indexes/index.md', '//', '/', 'g')
-  return (here ==# index) ? 1 : 0
-endfunction
-
-
-
 if !exists('g:notesdir')
   echohl WarningMsg
   echomsg '[WARNING] g:notesdir not set, set it to the directory containing your notes'
@@ -44,16 +10,16 @@ let g:notesdir = (g:notesdir[-1] ==# '/') ? expand(g:notesdir) : expand(g:notesd
 let g:browser = picobook#external#GetBrowserSubCommand()
 
 
-command! GoToIndex :call GoToIndex()
+command! GoToIndex :call picobook#navigation#GoToIndex()
 command! -bang -nargs=* GrepPicoNotes :call picobook#fzf#FzfNotes(<q-args>)
-nnoremap <silent> <Leader>ww :call GoToIndex()<CR>
+nnoremap <silent> <Leader>ww :call picobook#navigation#GoToIndex()<CR>
 nnoremap <silent> <Leader>wo :call picobook#external#OpenFileInBrowser()<CR>
 nnoremap <silent> <Leader>wi :call picobook#external#OpenPageInGitHub()<CR>
 nnoremap <silent> <Leader>wb :call picobook#external#OpenPageInBrowser()<CR>
-nnoremap <silent> <Leader>wf :call GoToNoteFile('edit')<CR>
-nnoremap <silent> <Leader>wt :call GoToNoteFile('tabe')<CR>
-nnoremap <silent> <Leader>wv :call GoToNoteFile('vs')<CR>
-nnoremap <silent> <Leader>wx :call GoToNoteFile('sp')<CR>
+nnoremap <silent> <Leader>wf :call picobook#navigation#GoToNoteFile('edit')<CR>
+nnoremap <silent> <Leader>wt :call picobook#navigation#GoToNoteFile('tabe')<CR>
+nnoremap <silent> <Leader>wv :call picobook#navigation#GoToNoteFile('vs')<CR>
+nnoremap <silent> <Leader>wx :call picobook#navigation#GoToNoteFile('sp')<CR>
 nnoremap <silent> <Leader>wd :call picobook#movedelete#DeleteNoteFile()<CR>
 nnoremap <silent> <Leader>wm :call picobook#movedelete#MoveNoteFile()<CR>
 nnoremap <silent> <Leader>wg :GrepPicoNotes<CR>

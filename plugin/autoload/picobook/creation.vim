@@ -1,7 +1,7 @@
 function! s:CreateFilePath(filetitle) abort
   " creates a relative file path with the file title and subtitle
   let newfile = tolower(join(split(a:filetitle, ' '), '_')) . '.md'
-  if InIndex()
+  if picobook#utils#InIndex()
     return newfile
   endif
   let subtitle = picobook#parsing#GetSubtitle()
@@ -82,6 +82,6 @@ function! picobook#creation#CreateNewPage(filetitle = v:null) abort
   " write the new filename to the page and go to it
   call append(line('.'), '- [' . filetitle . '](' . relpath . ')')
   normal! j
-  call GoToNoteFile('edit', filetitle)
+  call picobook#navigation#GoToNoteFile('edit', filetitle)
   write
 endfunction

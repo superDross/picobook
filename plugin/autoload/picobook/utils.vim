@@ -56,3 +56,13 @@ function! picobook#utils#GetRelativePath(to, from) abort
   let normalised_relative_path = substitute(relative_path, '//', '/', 'g')
   return normalised_relative_path
 endfunction
+
+
+function! picobook#utils#InIndex() abort
+  " NOTE: there should not be // in the path, investigate why they appear
+  let here = substitute(expand('%:p'), '//', '/', 'g')
+  let index = substitute(expand(g:notesdir) . '_indexes/index.md', '//', '/', 'g')
+  return (here ==# index) ? 1 : 0
+endfunction
+
+
