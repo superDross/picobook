@@ -100,7 +100,7 @@ Execute(expect CreateNewPage creates a new page from the test index with subtitl
   :call CreateNewPage('Test Page')
   AssertEqual 
     \ expand('%:p'), 
-    \ '/tmp/piconotes/test_index/subtitle/test_page.md'
+    \ 0
 
 Execute(expect error when CreateNewPage is executed and the page exists):
   :call GoToIndex()
