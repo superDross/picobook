@@ -1,9 +1,22 @@
+" picobook.vim - Wiki Plugin
+" Author:      David Ross <https://github.com/superDross/>
+
+
+" prevents loading the plugin multiple times
+if exists('g:loaded_picobook')
+  finish
+endif
+let g:loaded_picobook = 1
+
+
+" check if g:notesdir is set, warn and finish if not
 if !exists('g:notesdir')
   echohl WarningMsg
   echomsg '[WARNING] g:notesdir not set, set it to the directory containing your notes'
   echohl None
   finish
 endif
+
 
 " ensure g:notesdir is set as expected
 let g:notesdir = (g:notesdir[-1] ==# '/') ? expand(g:notesdir) : expand(g:notesdir . '/')

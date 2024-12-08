@@ -21,5 +21,3 @@ function! picobook#navigation#GoToNoteFile(opencommand, title = v:null) abort
   let back_file_path = picobook#utils#GetRelativePath(current_index_path, expand('%:p'))
   call picobook#creation#AddPageHeader(back_file_path, a:title)
 endfunction
-
-
