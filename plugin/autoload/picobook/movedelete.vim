@@ -1,4 +1,5 @@
 function! picobook#movedelete#DeleteNoteFile(confirmation = 1) abort
+  " delete the piconote file under the cursor and its corresponding line in the index file
   call RaiseErrorIfNotInIndex()
   let note_file = ExtractFullPath()
   let answer = (a:confirmation == 1) ? input('Delete file? (y/n): ') : 'y'
@@ -11,6 +12,8 @@ endfunction
 
 
 function! picobook#movedelete#MoveNoteFile(newdir = v:null, confirmation = 1) abort
+  " move the piconote file under the cursor to a new directory and update the
+  " index file
 
   " only allow function if executed within an index file
   call RaiseErrorIfNotInIndex()
