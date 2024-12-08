@@ -40,65 +40,6 @@ function ExtractFullPath(partialPath = '')
 endfunction
 
 
-function DeleteNoteFile(confirmation = 1)
-  call RaiseErrorIfNotInIndex()
-  let note_file = ExtractFullPath()
-  let answer = (a:confirmation == 1) ? input('Delete file? (y/n): ') : 'y'
-  if answer ==# 'y'
-    call delete(note_file)
-    execute 'delete'
-    silent! write
-  endif
-endfunction
-
-
-function MoveNoteFile(newdir = v:null, confirmation = 1)
-
-  " only allow function if executed within an index file
-  call RaiseErrorIfNotInIndex()
-
-  " get path for current file under cursor
-  let filepath = ExtractFullPath()
-  let relativepath = ExtractPath()
-  let filename = fnamemodify( filepath, ':p:t')
-
-  " append forward slash if not present on new directory
-  let q = 'Enter new directory (relative to the top level dir): '
-  let newdir = (a:newdir == v:null) ? input(q) : a:newdir
-  if newdir[-1:] !=# '/'
-    let newdir = newdir . '/'
-  endif
-
-  " get the path for the new files
-  let new_relativepath = newdir . filename
-  let new_filename = g:notesdir . new_relativepath
-
-  " e.g. ~/bin/piconotes/ -> piconotes/
-  let rootdir =  fnamemodify(substitute(expand(g:notesdir), '/$', '', ''), ':t') . '/'
-  if a:confirmation ==# 1
-    let confirmation = input(
-    \  'Move file from ' . relativepath .
-    \  ' to ' . rootdir . new_relativepath . '? (y/n): '
-    \)
-  else
-    let confirmation = 'y'
-  endif
-
-  if confirmation ==# 'y'
-    " s/currentname/newname/
-    let new_line = substitute(
-    \  getline('.'),
-    \  relativepath,
-    \  '../' . new_relativepath,
-    \  ''
-    \)
-    call system('mkdir -p ' . fnamemodify(new_filename, ':p:h'))
-    call system('mv ' . filepath . ' ' . new_filename)
-    " setline with new substitute line
-    call setline(line('.'), new_line)
-  endif
-endfunction
-
 
 
 function GoToNoteFile(opencommand, title = v:null)
@@ -208,7 +149,7 @@ nnoremap <silent> <Leader>wf :call GoToNoteFile('edit')<CR>
 nnoremap <silent> <Leader>wt :call GoToNoteFile('tabe')<CR>
 nnoremap <silent> <Leader>wv :call GoToNoteFile('vs')<CR>
 nnoremap <silent> <Leader>wx :call GoToNoteFile('sp')<CR>
-nnoremap <silent> <Leader>wd :call DeleteNoteFile()<CR>
-nnoremap <silent> <Leader>wm :call MoveNoteFile()<CR>
+nnoremap <silent> <Leader>wd :call picobook#movedelete#DeleteNoteFile()<CR>
+nnoremap <silent> <Leader>wm :call picobook#movedelete#MoveNoteFile()<CR>
 nnoremap <silent> <Leader>wg :GrepPicoNotes<CR>
 nnoremap <silent> <Leader>wp :call picobook#creation#CreateNewPage()<CR>

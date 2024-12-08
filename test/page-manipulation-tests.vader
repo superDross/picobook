@@ -37,7 +37,7 @@ Execute(expect DeleteNoteFile to delete the file):
   \ 1
   :call GoToIndex()
   :/\[Test Index\]
-  :call DeleteNoteFile('y')
+  :call picobook#movedelete#DeleteNoteFile('y')
   AssertEqual
   \ filereadable(g:notesdir . '/_indexes/test_index.md'),
   \ 0
@@ -55,7 +55,7 @@ Execute(expect MoveNoteFile to move the file to a different directory):
   :/\[Test Index\]
   :call GoToNoteFile('edit')
   :/\[Test Page\]
-  :call MoveNoteFile('moved_dir', 0)
+  :call picobook#movedelete#MoveNoteFile('moved_dir', 0)
   " ensure the file has physically moved
   AssertEqual
   \ filereadable(g:notesdir . '/test_index/test_page.md'),
