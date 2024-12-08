@@ -1,3 +1,8 @@
+" Parsing.vim
+"
+" Text parsing functions
+
+
 function! picobook#parsing#ExtractPath(text = getline('.')) abort
   " extracts path link under cursor as is (relative path)
   try

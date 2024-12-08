@@ -1,3 +1,8 @@
+" MoveDelete.vim
+"
+" Allows for moving and deleting note files from within the index file
+
+
 function! picobook#movedelete#DeleteNoteFile(confirmation = 1) abort
   " delete the piconote file under the cursor and its corresponding line in the index file
   call picobook#exceptions#RaiseErrorIfNotInIndex()

@@ -20,15 +20,15 @@ endif
 
 " ensure g:notesdir is set as expected
 let g:notesdir = (g:notesdir[-1] ==# '/') ? expand(g:notesdir) : expand(g:notesdir . '/')
-let g:browser = picobook#external#GetBrowserSubCommand()
+let g:browser = picobook#browser#GetBrowserSubCommand()
 
 
 command! GoToIndex :call picobook#navigation#GoToIndex()
 command! -bang -nargs=* GrepPicoNotes :call picobook#fzf#FzfNotes(<q-args>)
 nnoremap <silent> <Leader>ww :call picobook#navigation#GoToIndex()<CR>
-nnoremap <silent> <Leader>wo :call picobook#external#OpenFileInBrowser()<CR>
-nnoremap <silent> <Leader>wi :call picobook#external#OpenPageInGitHub()<CR>
-nnoremap <silent> <Leader>wb :call picobook#external#OpenPageInBrowser()<CR>
+nnoremap <silent> <Leader>wo :call picobook#browser#OpenFileInBrowser()<CR>
+nnoremap <silent> <Leader>wi :call picobook#browser#OpenPageInGitHub()<CR>
+nnoremap <silent> <Leader>wb :call picobook#browser#OpenPageInBrowser()<CR>
 nnoremap <silent> <Leader>wf :call picobook#navigation#GoToNoteFile('edit')<CR>
 nnoremap <silent> <Leader>wt :call picobook#navigation#GoToNoteFile('tabe')<CR>
 nnoremap <silent> <Leader>wv :call picobook#navigation#GoToNoteFile('vs')<CR>

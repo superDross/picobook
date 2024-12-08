@@ -1,4 +1,4 @@
-" fzf.vim
+" FZF.vim
 "
 " Fzf integration with note files
 

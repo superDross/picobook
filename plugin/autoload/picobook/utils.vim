@@ -64,5 +64,3 @@ function! picobook#utils#InIndex() abort
   let index = substitute(expand(g:notesdir) . '_indexes/index.md', '//', '/', 'g')
   return (here ==# index) ? 1 : 0
 endfunction
-
-

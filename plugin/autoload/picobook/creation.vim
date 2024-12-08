@@ -1,3 +1,8 @@
+" Creation.vim
+"
+" Note file and directory creation
+
+
 function! s:CreateFilePath(filetitle) abort
   " creates a relative file path with the file title and subtitle
   let newfile = tolower(join(split(a:filetitle, ' '), '_')) . '.md'

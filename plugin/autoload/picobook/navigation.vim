@@ -1,3 +1,8 @@
+" Navigation.vim
+"
+" Facilitates navigation between notes and indexes
+
+
 function! picobook#navigation#GoToIndex() abort
   let indexpath = g:notesdir . '/_indexes/' . 'index.md'
   call picobook#creation#CreateParentDir(indexpath)

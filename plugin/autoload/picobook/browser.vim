@@ -1,4 +1,9 @@
-function! picobook#external#GetBrowserSubCommand() abort
+" Browser.vim
+"
+" Functions associated with opening files in the browser
+
+
+function! picobook#browser#GetBrowserSubCommand() abort
   let browser = get(g:, 'browser', 'firefox')
   if has('mac')
     let title_case_browser = toupper(browser[0]) . browser[1:]
@@ -8,7 +13,7 @@ function! picobook#external#GetBrowserSubCommand() abort
 endfunction
 
 
-function! picobook#external#OpenPageInGitHub() abort
+function! picobook#browser#OpenPageInGitHub() abort
   call picobook#exceptions#RaiseErrorIfNotInIndex()
   let partialPath = picobook#parsing#ExtractPath()
   " is index file
@@ -23,14 +28,14 @@ function! picobook#external#OpenPageInGitHub() abort
 endfunction
 
 
-function! picobook#external#OpenPageInBrowser() abort
+function! picobook#browser#OpenPageInBrowser() abort
   call picobook#exceptions#RaiseErrorIfNotInIndex()
   let filepath = picobook#parsing#ExtractFullPath()
   call system(g:browser . ' ' . filepath)
 endfunction
 
 
-function! picobook#external#OpenFileInBrowser() abort
+function! picobook#browser#OpenFileInBrowser() abort
   let indexpath = expand('%:p')
   call system(g:browser . ' ' . indexpath)
 endfunction

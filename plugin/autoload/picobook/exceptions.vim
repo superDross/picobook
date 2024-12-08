@@ -1,3 +1,8 @@
+" Exceptions.vim
+"
+" Functions associated with error handling and exceptions
+
+
 function! picobook#exceptions#RaiseErrorIfNotInIndex() abort
   try
     if stridx(expand('%:p:h'), '/_indexes') == -1
@@ -7,4 +12,3 @@ function! picobook#exceptions#RaiseErrorIfNotInIndex() abort
     echoerr 'Caught error: ' . v:exception
   endtry
 endfunction
-
