@@ -1,7 +1,7 @@
 function! picobook#movedelete#DeleteNoteFile(confirmation = 1) abort
   " delete the piconote file under the cursor and its corresponding line in the index file
   call picobook#exceptions#RaiseErrorIfNotInIndex()
-  let note_file = ExtractFullPath()
+  let note_file = picobook#parsing#ExtractFullPath()
   let answer = (a:confirmation == 1) ? input('Delete file? (y/n): ') : 'y'
   if answer ==# 'y'
     call delete(note_file)
@@ -19,8 +19,8 @@ function! picobook#movedelete#MoveNoteFile(newdir = v:null, confirmation = 1) ab
   call picobook#exceptions#RaiseErrorIfNotInIndex()
 
   " get path for current file under cursor
-  let filepath = ExtractFullPath()
-  let relativepath = ExtractPath()
+  let filepath = picobook#parsing#ExtractFullPath()
+  let relativepath = picobook#parsing#ExtractPath()
   let filename = fnamemodify( filepath, ':p:t')
 
   " append forward slash if not present on new directory

@@ -4,7 +4,7 @@ function! s:CreateFilePath(filetitle) abort
   if InIndex()
     return newfile
   endif
-  let subtitle = GetSubtitle()
+  let subtitle = picobook#parsing#GetSubtitle()
   let dirname = fnamemodify(expand('%:p'), ':t:r')
   let dirname = (subtitle ==# '') ? dirname : dirname . '/' . subtitle
   return '../' . dirname . '/' . newfile
@@ -72,7 +72,7 @@ function! picobook#creation#CreateNewPage(filetitle = v:null) abort
   " check if file already exists, then error if it does
   try
     let relpath = s:CreateFilePath(filetitle)
-    if filereadable(ExtractFullPath(relpath))
+    if filereadable(picobook#parsing#ExtractFullPath(relpath))
       throw 'File already exists'
     endif
   catch

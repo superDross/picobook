@@ -10,7 +10,7 @@ endfunction
 
 function! picobook#external#OpenPageInGitHub() abort
   call picobook#exceptions#RaiseErrorIfNotInIndex()
-  let partialPath = ExtractPath()
+  let partialPath = picobook#parsing#ExtractPath()
   " is index file
   if partialPath !~# '/'
     let partialPath = '_indexes/' . partialPath
@@ -25,7 +25,7 @@ endfunction
 
 function! picobook#external#OpenPageInBrowser() abort
   call picobook#exceptions#RaiseErrorIfNotInIndex()
-  let filepath = ExtractFullPath()
+  let filepath = picobook#parsing#ExtractFullPath()
   call system(g:browser . ' ' . filepath)
 endfunction
 
