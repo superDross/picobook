@@ -1,14 +1,3 @@
-function RaiseErrorIfNotInIndex()
-  try
-    if stridx(expand('%:p:h'), '/_indexes') == -1
-      throw 'Command only valid within picobook index files'
-    endif
-  catch
-    echoerr 'Caught error: ' . v:exception
-  endtry
-endfunction
-
-
 function ExtractPath(text = getline('.'))
   " extracts path link under cursor as is (relative path)
   try
@@ -45,7 +34,7 @@ endfunction
 function GoToNoteFile(opencommand, title = v:null)
   " open and/or create the note file under the cursor and create a back button, if not
   " already present
-  call RaiseErrorIfNotInIndex()
+  call picobook#exceptions#RaiseErrorIfNotInIndex()
   let note_file = ExtractFullPath()
   call picobook#creation#CreateParentDir(note_file)
   silent! write
@@ -57,7 +46,7 @@ endfunction
 
 
 function OpenPageInGitHub()
-  call RaiseErrorIfNotInIndex()
+  call picobook#exceptions#RaiseErrorIfNotInIndex()
   let partialPath = ExtractPath()
   " is index file
   if partialPath !~# '/'
@@ -72,7 +61,7 @@ endfunction
 
 
 function OpenPageInBrowser()
-  call RaiseErrorIfNotInIndex()
+  call picobook#exceptions#RaiseErrorIfNotInIndex()
   let filepath = ExtractFullPath()
   call system(g:browser . ' ' . filepath)
 endfunction

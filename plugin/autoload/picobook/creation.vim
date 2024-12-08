@@ -57,7 +57,7 @@ endfunction
 
 function! picobook#creation#CreateNewPage(filetitle = v:null) abort
   " create a new index entry and go to the new page
-  call RaiseErrorIfNotInIndex()
+  call picobook#exceptions#RaiseErrorIfNotInIndex()
 
   " check if no title is given, then error if it is
   try
