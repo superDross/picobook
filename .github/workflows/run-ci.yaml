@@ -1,0 +1,36 @@
+name: PicoBookTestCI
+
+on: [push]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Build Docker Image
+        run: make build
+      - name: Run Linter
+        run: make _lint
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Setup
+        run: |
+          git clone https://github.com/junegunn/vader.vim.git
+          git checkout -b testing_branch
+      - name: Build Docker Image
+        run: make build
+      - name: Run Tests
+        run: make _test

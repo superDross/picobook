@@ -95,8 +95,8 @@ Execute(expect CreateNewPage creates a new page from the test index with a heade
 Execute(expect CreateNewPage creates a new page from the test index with subtitle):
   :call GoToIndex()
   :call CreateNewPage('Test Index')
-  :norm i## Subtitle
-  :norm o
+  :norm! i## Subtitle
+  :norm! o
   :call CreateNewPage('Test Page')
   AssertEqual 
     \ expand('%:p'), 

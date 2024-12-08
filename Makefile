@@ -13,10 +13,23 @@ build: ## Build container for testing changes
 	@echo 'building picobook-dev:latest image...'
 	@docker build -t picobook-dev:latest .
 
+.PHONY: _test
+_test:
+	@docker run -t --rm picobook-dev:latest vim -c 'Vader! test/*.vader'
+
 .PHONY: test
 test: ## Execute tests in container
 	$(MAKE) build
-	@docker run -t --rm picobook-dev:latest vim -c 'Vader! test/*.vader'
+	$(MAKE) _test
+
+.PHONY: _lint
+_lint:
+	@docker run -t --rm picobook-dev:latest vint test/*.vader plugin/*
+
+.PHONY: lint
+lint: ## Lint the vimscript code
+	$(MAKE) build
+	$(MAKE) _lint
 
 .PHONY: test-local
 test-local:  ## Execute tests locally (Not Recommended)
