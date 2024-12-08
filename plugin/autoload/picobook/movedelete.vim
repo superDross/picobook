@@ -62,6 +62,7 @@ function! picobook#movedelete#MoveNoteFile(newdir = v:null, confirmation = 1) ab
     call system('mv ' . filepath . ' ' . new_filename)
     " setline with new substitute line
     call setline(line('.'), new_line)
+    silent! write
   endif
 endfunction
 

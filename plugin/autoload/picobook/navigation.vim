@@ -10,7 +10,7 @@ function! picobook#navigation#GoToIndex() abort
   if filereadable(expand(indexpath)) ==# 0
     call append(0, ['# Piconotes', '', '[TOC]', '', '## Indexes', ''])
   endif
-  write
+  silent! write
 endfunction
 
 

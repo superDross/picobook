@@ -88,5 +88,5 @@ function! picobook#creation#CreateNewPage(filetitle = v:null) abort
   call append(line('.'), '- [' . filetitle . '](' . relpath . ')')
   normal! j
   call picobook#navigation#GoToNoteFile('edit', filetitle)
-  write
+  silent! write
 endfunction
