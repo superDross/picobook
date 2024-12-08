@@ -3,7 +3,7 @@ Before:
   :call GoToIndex()
   :norm! G
   :call CreateNewPage('Test Index')
-  :norm G
+  :norm! G
   :call CreateNewPage('Test Page')
 
 After:
