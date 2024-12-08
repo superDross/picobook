@@ -45,34 +45,6 @@ function GoToNoteFile(opencommand, title = v:null)
 endfunction
 
 
-function OpenPageInGitHub()
-  call picobook#exceptions#RaiseErrorIfNotInIndex()
-  let partialPath = ExtractPath()
-  " is index file
-  if partialPath !~# '/'
-    let partialPath = '_indexes/' . partialPath
-  " is note file
-  elseif partialPath[:2] ==# '../'
-    let partialPath = partialPath[2:]
-  endif
-  echo g:browser . ' ' . g:noteurl . partialPath
-  call system(g:browser . ' ' . g:noteurl . partialPath)
-endfunction
-
-
-function OpenPageInBrowser()
-  call picobook#exceptions#RaiseErrorIfNotInIndex()
-  let filepath = ExtractFullPath()
-  call system(g:browser . ' ' . filepath)
-endfunction
-
-
-function OpenFileInBrowser()
-  let indexpath = expand('%:p')
-  call system(g:browser . ' ' . indexpath)
-endfunction
-
-
 function GoToIndex()
   let indexpath = g:notesdir . '/_indexes/' . 'index.md'
   call picobook#creation#CreateParentDir(indexpath)
@@ -81,16 +53,6 @@ function GoToIndex()
     call append(0, ['# Piconotes', '', '[TOC]', '', '## Indexes', ''])
   endif
   write
-endfunction
-
-
-function GetBrowserSubCommand()
-  let browser = get(g:, 'browser', 'firefox')
-  if has('mac')
-    let title_case_browser = toupper(browser[0]) . browser[1:]
-    return 'open -a /Applications/' . title_case_browser . '.app'
-  endif
-  return browser
 endfunction
 
 
@@ -125,15 +87,15 @@ endif
 
 " ensure g:notesdir is set as expected
 let g:notesdir = (g:notesdir[-1] ==# '/') ? expand(g:notesdir) : expand(g:notesdir . '/')
-let g:browser = GetBrowserSubCommand()
+let g:browser = picobook#external#GetBrowserSubCommand()
 
 
 command! GoToIndex :call GoToIndex()
 command! -bang -nargs=* GrepPicoNotes :call picobook#fzf#FzfNotes(<q-args>)
 nnoremap <silent> <Leader>ww :call GoToIndex()<CR>
-nnoremap <silent> <Leader>wo :call OpenFileInBrowser()<CR>
-nnoremap <silent> <Leader>wi :call OpenPageInGitHub()<CR>
-nnoremap <silent> <Leader>wb :call OpenPageInBrowser()<CR>
+nnoremap <silent> <Leader>wo :call picobook#external#OpenFileInBrowser()<CR>
+nnoremap <silent> <Leader>wi :call picobook#external#OpenPageInGitHub()<CR>
+nnoremap <silent> <Leader>wb :call picobook#external#OpenPageInBrowser()<CR>
 nnoremap <silent> <Leader>wf :call GoToNoteFile('edit')<CR>
 nnoremap <silent> <Leader>wt :call GoToNoteFile('tabe')<CR>
 nnoremap <silent> <Leader>wv :call GoToNoteFile('vs')<CR>
