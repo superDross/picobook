@@ -1,9 +1,9 @@
 Before:
   " create some base data
   :call GoToIndex()
-  :norm G
+  :norm! G
   :call CreateNewPage('Test Index')
-  :norm G
+  :norm! G
   :call CreateNewPage('Test Page')
 
 After:

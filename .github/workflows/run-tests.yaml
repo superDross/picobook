@@ -3,7 +3,21 @@ name: PicoBookTestCI
 on: [push, pull_request]
 
 jobs:
-  build:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Build Docker Image
+        run: make build
+      - name: Run Linter
+        run: make _lint
+
+  test:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

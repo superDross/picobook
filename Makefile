@@ -22,6 +22,15 @@ test: ## Execute tests in container
 	$(MAKE) build
 	$(MAKE) _test
 
+.PHONY: _lint
+_lint:
+	@docker run -t --rm picobook-dev:latest vint test/*.vader plugin/*
+
+.PHONY: lint
+lint: ## Lint the vimscript code
+	$(MAKE) build
+	$(MAKE) _lint
+
 .PHONY: test-local
 test-local:  ## Execute tests locally (Not Recommended)
 	@rm -f ~/.tickets/ticket.vim/*

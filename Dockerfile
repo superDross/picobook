@@ -19,11 +19,15 @@ RUN apk update && apk --no-cache add \
     ninja \
     openssl \
     pkgconf \
+	python3 \
+	py3-pip \
 	tree \
     unzip \
     vim \
     wget
 
+# install linter and test dependencies
+RUN python -m pip install --no-cache-dir git+https://github.com/Vimjas/vint.git@master
 RUN git clone https://github.com/junegunn/vader.vim.git
 
 COPY ./ /tests/
