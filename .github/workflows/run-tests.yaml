@@ -19,4 +19,4 @@ jobs:
       - name: Build Docker Image
         run: make build
       - name: Run Tests
-        run: make test
+        run: make _test
