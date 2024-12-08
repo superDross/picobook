@@ -14,7 +14,7 @@ Execute(expect GoToIndex goes to and creates file):
   :call GoToIndex()
   AssertEqual 
     \ expand('%:p'), 
-    \ expand(g:notesdir . '/_indexes/index.md')
+    \ 1
 
 Execute(expect GoToIndex create new file with expected template):
   :call GoToIndex()
