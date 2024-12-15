@@ -3,9 +3,44 @@
 " Note file and directory creation
 
 
-function! s:CreateFilePath(filetitle) abort
+function! s:CreateNewFile(filetitle = v:null, ext = v:null) abort
+  " create a new index entry and go to the new page
+  call picobook#exceptions#RaiseErrorIfNotInIndex()
+  let ext = a:ext
+
+  " check if no title is given, then error if it is
+  let filetype = (ext ==# '.md') ? 'page' : 'script'
+  let filetitle = (a:filetitle is v:null) ? input('Enter title of new ' . filetype . ': ') : a:filetitle
+  call picobook#exceptions#NoInputGiven(filetitle)
+
+  " ask for filetype if not given
+  if ext is v:null
+    let ext = input('Enter extension of new script (e.g. .py, .vim): ')
+    call picobook#exceptions#NoInputGiven(ext)
+    let ext = (ext[0] ==# '.') ? ext : '.' . ext
+  endif
+
+  " check if file already exists, then error if it does
+  try
+    let relpath = s:CreateFilePath(filetitle, ext)
+    if filereadable(picobook#parsing#ExtractFullPath(relpath))
+      throw 'File already exists'
+    endif
+  catch
+    echoerr 'Caught Exception: ' . v:exception
+  endtry
+
+  " write the new filename to the page and go to it
+  call append(line('.'), '- [' . filetitle . '](' . relpath . ')')
+  normal! j
+  call picobook#navigation#GoToNoteFile('edit', filetitle)
+  silent! write
+endfunction
+
+
+function! s:CreateFilePath(filetitle, ext = '.md') abort
   " creates a relative file path with the file title and subtitle
-  let newfile = tolower(join(split(a:filetitle, ' '), '_')) . '.md'
+  let newfile = tolower(join(split(a:filetitle, ' '), '_')) . a:ext
   if picobook#utils#InIndex()
     return newfile
   endif
@@ -60,33 +95,15 @@ function! picobook#creation#AddPageHeader(back_filepath, title = v:null) abort
 endfunction
 
 
+function! picobook#creation#CreateNewScript(filetitle = v:null, ext = v:null) abort
+  let ext = a:ext
+  if ext isnot v:null
+    let ext = (ext[0] ==# '.') ? ext : '.' . ext
+  endif
+  call s:CreateNewFile(a:filetitle, ext)
+endfunction
+
+
 function! picobook#creation#CreateNewPage(filetitle = v:null) abort
-  " create a new index entry and go to the new page
-  call picobook#exceptions#RaiseErrorIfNotInIndex()
-
-  " check if no title is given, then error if it is
-  try
-    let filetitle = (a:filetitle == v:null) ? input('Enter title of new page: ') : a:filetitle
-    if filetitle ==# ''
-      throw 'No title entered'
-    endif
-  catch
-    echoerr 'Caught Exception: ' . v:exception
-  endtry
-
-  " check if file already exists, then error if it does
-  try
-    let relpath = s:CreateFilePath(filetitle)
-    if filereadable(picobook#parsing#ExtractFullPath(relpath))
-      throw 'File already exists'
-    endif
-  catch
-    echoerr 'Caught Exception: ' . v:exception
-  endtry
-
-  " write the new filename to the page and go to it
-  call append(line('.'), '- [' . filetitle . '](' . relpath . ')')
-  normal! j
-  call picobook#navigation#GoToNoteFile('edit', filetitle)
-  silent! write
+  call s:CreateNewFile(a:filetitle, '.md')
 endfunction

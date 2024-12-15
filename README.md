@@ -22,6 +22,7 @@ Normal Mode:
 - `<Leader>wm` -- Move wiki link and associated file
 - `<Leader>wg` -- FZF grep notes (requires [FZF](https://github.com/junegunn/fzf.vim))
 - `<Leader>wp` -- Create new wiki link and go to the file
+- `<Leader>ws` -- Create new wiki link and go to the script
 
 Commands:
 
