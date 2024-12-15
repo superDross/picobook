@@ -37,3 +37,4 @@ nnoremap <silent> <Leader>wd :call picobook#movedelete#DeleteNoteFile()<CR>
 nnoremap <silent> <Leader>wm :call picobook#movedelete#MoveNoteFile()<CR>
 nnoremap <silent> <Leader>wg :GrepPicoNotes<CR>
 nnoremap <silent> <Leader>wp :call picobook#creation#CreateNewPage()<CR>
+nnoremap <silent> <Leader>ws :call picobook#creation#CreateNewScript()<CR>

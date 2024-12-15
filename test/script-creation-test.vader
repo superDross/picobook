@@ -1,0 +1,56 @@
+After:
+  :silent !rm -rf /tmp/piconotes/*
+
+Execute(expect CreateNewScript creates a new index script from the index):
+  :call picobook#navigation#GoToIndex()
+  :call picobook#creation#CreateNewScript('Test Script', '.vim')
+  AssertEqual 
+    \ expand('%:p'), 
+    \ expand(g:notesdir . '/_indexes/test_script.vim')
+
+Execute(expect CreateNewScript creates the link from the index correctly):
+  :call picobook#navigation#GoToIndex()
+  :call picobook#creation#CreateNewScript('Test Script', '.vim')
+  :call picobook#navigation#GoToIndex()
+  :/\[Test Script\]
+  AssertEqual 
+    \ getline('.'),
+    \ "- [Test Script](test_script.vim)"
+
+Execute(expect CreateNewScript creates a new script from the test index):
+  :call picobook#navigation#GoToIndex()
+  :call picobook#creation#CreateNewPage('Test Index')
+  :call picobook#creation#CreateNewScript('Test Script', '.py')
+  AssertEqual 
+    \ expand('%:p'), 
+    \ '/tmp/piconotes/test_index/test_script.py'
+
+Execute(expect CreateNewScript creates a new script from the test index without a dot):
+  :call picobook#navigation#GoToIndex()
+  :call picobook#creation#CreateNewPage('Test Index')
+  :call picobook#creation#CreateNewScript('Test Script', 'py')
+  AssertEqual 
+    \ expand('%:p'), 
+    \ '/tmp/piconotes/test_index/test_script.py'
+
+Execute(expect CreateNewScript creates a new page from the test index with subtitle):
+  :call picobook#navigation#GoToIndex()
+  :call picobook#creation#CreateNewPage('Test Index')
+  :norm! i## Subtitle
+  :norm! o
+  :call picobook#creation#CreateNewScript('Test Script', '.py')
+  AssertEqual 
+    \ expand('%:p'), 
+    \ '/tmp/piconotes/test_index/subtitle/test_script.py'
+
+Execute(expect error when CreateNewScript is executed and the page exists):
+  :call picobook#navigation#GoToIndex()
+  :call picobook#creation#CreateNewScript('Test Script', '.py')
+  :call picobook#navigation#GoToIndex()
+  AssertThrows
+    \ :call picobook#creation#CreateNewScript('Test Script', '.py')
+
+Execute(expect error when CreateNewScript is given no title):
+  :call picobook#navigation#GoToIndex()
+  AssertThrows
+    \ :call picobook#creation#CreateNewScript('')
