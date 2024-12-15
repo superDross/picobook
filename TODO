@@ -1,0 +1,56 @@
+- split up large functions into smaller ones
+- unit testing???
+
+
+DONE:
+- auto add `[TOC]` after the back button
+- specify move behaviour
+- sometimes multiple `/` are added to the links then going back and forward resulting in links not working eventually
+- auto generate link based upon file name
+- disallow creating directory outside piconotes
+- fix bug when using <leader>wf results in creating a file when an error occurs
+  - seems as though 'not valid line' is not caught higher up the call stack
+  - works with checkifindex as we are using call
+  - fucking vims exception handling sucks
+  - seems to create a ~/0 file
+  - FIX: poorly error handling was the cause
+- don't add back button if the file is encrypted (check for `GITCRYPT` in the first few lines, or just use `search()` in vimscript)
+- check if g:notesdir exists
+- ensure g:notesdir = expand(g:notesdir)
+- ensure g:notesdir endswith '/'
+- create some automated testing (my god this could be very difficult)
+  - make them end-to-end; use commands like `:call GoToIndex()`
+
+- organise project into modules
+
+  - Page Creation
+	- CreateParentDir
+    - CreateFilePath
+	- CreateNewPage
+	- AddPageHeader
+
+  - Move / Delete
+	- DeleteNoteFile  (Delete)
+	- MoveNoteFile    (Update)
+
+  - Error Handling
+	- CheckIfInIndex
+
+  - Open Externally
+    - OpenPageInGitHub
+    - OpenPageInBrowser
+    - OpenFileInBrowser
+    - GetBrowserSubCommand
+
+  - Text Extraction
+	- ExtractPath
+	- ExtractFullPath
+	- GetSubtitle
+
+  - Page Navigation
+	- GoToNoteFile    (Read)
+	- GoToIndex       (Read)
+
+- new command CreateNewScript()
+  - ensure does not add a header
+  - add a test

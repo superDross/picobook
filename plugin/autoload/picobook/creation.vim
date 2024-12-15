@@ -3,38 +3,48 @@
 " Note file and directory creation
 
 
+function! s:AskForFileExt(ext = v:null) abort
+  " ask for filetype if not given
+  let ext = a:ext
+  if ext is v:null
+    let ext = input('Enter extension of new script (e.g. .py, .vim): ')
+    call picobook#exceptions#RaiseIfNoInputGiven(ext)
+    let ext = (ext[0] ==# '.') ? ext : '.' . ext
+  endif
+  return ext
+endfunction
+
+
+function! s:AskForFileTitle(filetitle = v:null, ext = v:null) abort
+  " check if no title is given, then error if it is
+  let filetype = (a:ext ==# '.md') ? 'page' : 'script'
+  let filetitle = (a:filetitle is v:null) ? input('Enter title of new ' . filetype . ': ') : a:filetitle
+  call picobook#exceptions#RaiseIfNoInputGiven(filetitle)
+  return filetitle
+endfunction
+
+
+function! s:CreateRefAndGoTo(filetitle, relpath) abort
+  " write the new filename to the page and go to it
+  call append(line('.'), '- [' . a:filetitle . '](' . a:relpath . ')')
+  normal! j
+  call picobook#navigation#GoToNoteFile('edit', a:filetitle)
+  silent! write
+endfunction
+
+
 function! s:CreateNewFile(filetitle = v:null, ext = v:null) abort
   " create a new index entry and go to the new page
   call picobook#exceptions#RaiseErrorIfNotInIndex()
-  let ext = a:ext
 
-  " check if no title is given, then error if it is
-  let filetype = (ext ==# '.md') ? 'page' : 'script'
-  let filetitle = (a:filetitle is v:null) ? input('Enter title of new ' . filetype . ': ') : a:filetitle
-  call picobook#exceptions#NoInputGiven(filetitle)
+  " ask for title and ext and create the relative path
+  let filetitle = s:AskForFileTitle(a:filetitle, a:ext)
+  let ext = s:AskForFileExt(a:ext)
+  let relpath = s:CreateFilePath(filetitle, ext)
+  call picobook#exceptions#RaiseIfFileExists(relpath, 1)
 
-  " ask for filetype if not given
-  if ext is v:null
-    let ext = input('Enter extension of new script (e.g. .py, .vim): ')
-    call picobook#exceptions#NoInputGiven(ext)
-    let ext = (ext[0] ==# '.') ? ext : '.' . ext
-  endif
-
-  " check if file already exists, then error if it does
-  try
-    let relpath = s:CreateFilePath(filetitle, ext)
-    if filereadable(picobook#parsing#ExtractFullPath(relpath))
-      throw 'File already exists'
-    endif
-  catch
-    echoerr 'Caught Exception: ' . v:exception
-  endtry
-
-  " write the new filename to the page and go to it
-  call append(line('.'), '- [' . filetitle . '](' . relpath . ')')
-  normal! j
-  call picobook#navigation#GoToNoteFile('edit', filetitle)
-  silent! write
+  " create the reference and go to the new file
+  call s:CreateRefAndGoTo(filetitle, relpath)
 endfunction
 
 
