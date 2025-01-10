@@ -63,15 +63,8 @@ endfunction
 
 function! picobook#creation#CreateParentDir(filepath) abort
   " create the directories for the file if they do not exist
-  try
-    let dirpath = expand(fnamemodify(a:filepath, ':h'))
-    if stridx(dirpath, expand(g:notesdir)) == -1
-      throw 'Directories and files can only be created within the notes directory: ' . g:notesdir
-    endif
-  catch
-    echoerr 'Caught error: ' . v:exception
-  endtry
-
+  let dirpath = expand(fnamemodify(a:filepath, ':h'))
+  call picobook#exceptions#RaiseIfDirCreatedOutsideNotesDir(dirpath)
   if !filereadable(dirpath)
     call mkdir(dirpath, 'p')
   endif

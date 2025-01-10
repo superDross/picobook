@@ -35,3 +35,14 @@ function! picobook#exceptions#RaiseIfFileExists(filepath, relative = 0) abort
     echoerr 'Caught Exception: ' . v:exception
   endtry
 endfunction
+
+
+function! picobook#exceptions#RaiseIfDirCreatedOutsideNotesDir(dirpath) abort
+  try
+    if stridx(a:dirpath, expand(g:notesdir)) == -1
+      throw 'Directories and files can only be created within the notes directory: ' . g:notesdir
+    endif
+  catch
+    echoerr 'Caught Exception: ' . v:exception
+  endtry
+endfunction
