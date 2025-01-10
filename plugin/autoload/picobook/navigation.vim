@@ -4,6 +4,7 @@
 
 
 function! picobook#navigation#GoToIndex() abort
+  " opens the primary index in the current buffer
   let indexpath = g:notesdir . '/_indexes/' . 'index.md'
   call picobook#creation#CreateParentDir(indexpath)
   execute 'edit ' . indexpath
