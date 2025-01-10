@@ -113,3 +113,9 @@ Execute(expect error when CreateNewPage is given no title):
   :call picobook#navigation#GoToIndex()
   AssertThrows
     \ :call picobook#creation#CreateNewPage('')
+
+
+Execute(expect error when CreateParentDir is outside of the notes directory):
+  :call picobook#navigation#GoToIndex()
+  AssertThrows
+    \ :call picobook#creation#CreateParentDir('/tmp/not_in_notesdir')
