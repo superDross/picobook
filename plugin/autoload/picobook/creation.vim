@@ -16,7 +16,7 @@ endfunction
 
 
 function! s:AskForFileTitle(filetitle = v:null, ext = v:null) abort
-  " check if no title is given, then error if it is
+  " ask for title of the new file, error if nothing is given by the user
   let filetype = (a:ext ==# '.md') ? 'page' : 'script'
   let filetitle = (a:filetitle is v:null) ? input('Enter title of new ' . filetype . ': ') : a:filetitle
   call picobook#exceptions#RaiseIfNoInputGiven(filetitle)
@@ -25,7 +25,7 @@ endfunction
 
 
 function! s:CreateRefAndGoTo(filetitle, relpath) abort
-  " write the new filename to the page and go to it
+  " write the new filename to the index page and go to it
   call append(line('.'), '- [' . a:filetitle . '](' . a:relpath . ')')
   normal! j
   call picobook#navigation#GoToNoteFile('edit', a:filetitle)

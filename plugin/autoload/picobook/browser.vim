@@ -4,6 +4,7 @@
 
 
 function! picobook#browser#GetBrowserSubCommand() abort
+  " get the browser command based on the OS
   let browser = get(g:, 'browser', 'firefox')
   if has('mac')
     let title_case_browser = toupper(browser[0]) . browser[1:]
@@ -14,6 +15,7 @@ endfunction
 
 
 function! picobook#browser#OpenPageInGitHub() abort
+  " open the current page in GitHub via the browser
   call picobook#exceptions#RaiseErrorIfNotInIndex()
   let partialPath = picobook#parsing#ExtractPath()
   " is index file
@@ -28,7 +30,8 @@ function! picobook#browser#OpenPageInGitHub() abort
 endfunction
 
 
-function! picobook#browser#OpenPageInBrowser() abort
+function! picobook#browser#OpenPageUnderCursorInBrowser() abort
+  " open the file under the cursor in the index file in the browser
   call picobook#exceptions#RaiseErrorIfNotInIndex()
   let filepath = picobook#parsing#ExtractFullPath()
   call system(g:browser . ' ' . filepath)
@@ -36,6 +39,7 @@ endfunction
 
 
 function! picobook#browser#OpenFileInBrowser() abort
+  " open the current picobook file in the browser
   let indexpath = expand('%:p')
   call system(g:browser . ' ' . indexpath)
 endfunction

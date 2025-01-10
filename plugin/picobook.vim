@@ -28,7 +28,7 @@ command! -bang -nargs=* GrepPicoNotes :call picobook#fzf#FzfNotes(<q-args>)
 nnoremap <silent> <Leader>ww :call picobook#navigation#GoToIndex()<CR>
 nnoremap <silent> <Leader>wo :call picobook#browser#OpenFileInBrowser()<CR>
 nnoremap <silent> <Leader>wi :call picobook#browser#OpenPageInGitHub()<CR>
-nnoremap <silent> <Leader>wb :call picobook#browser#OpenPageInBrowser()<CR>
+nnoremap <silent> <Leader>wb :call picobook#browser#OpenPageUnderCursorInBrowser()<CR>
 nnoremap <silent> <Leader>wf :call picobook#navigation#GoToNoteFile('edit')<CR>
 nnoremap <silent> <Leader>wt :call picobook#navigation#GoToNoteFile('tabe')<CR>
 nnoremap <silent> <Leader>wv :call picobook#navigation#GoToNoteFile('vs')<CR>
